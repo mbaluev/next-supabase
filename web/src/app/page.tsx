@@ -1,4 +1,4 @@
-import { createClient } from '@/lib/supabase/server';
+import { createClient } from '@/supabase/server';
 import { SampleList } from '@/app/sample-list';
 import type { Sample } from '@/app/use-sample-list';
 
