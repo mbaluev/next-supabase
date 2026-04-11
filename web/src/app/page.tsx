@@ -1,5 +1,6 @@
 import { createClient } from '@/lib/supabase/server';
 import { SampleList } from '@/app/sample-list';
+import type { Sample } from '@/app/use-sample-list';
 
 export default async function Home() {
   const supabase = await createClient();
@@ -31,7 +32,7 @@ export default async function Home() {
           <p>to get started.</p>
         </div>
       </div>
-      <SampleList initialData={data as any[]} />
+      <SampleList initialData={(data ?? []) as Sample[]} />
     </main>
   );
 }

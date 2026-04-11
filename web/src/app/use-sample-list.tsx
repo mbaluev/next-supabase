@@ -3,9 +3,11 @@
 import { useEffect, useState } from 'react';
 import { createClient } from '@/lib/supabase/client';
 
-type Sample = {
+export type Sample = {
   id: number;
   name: string;
+  email: string;
+  status: 'active' | 'disabled';
   created_at: string;
 };
 
