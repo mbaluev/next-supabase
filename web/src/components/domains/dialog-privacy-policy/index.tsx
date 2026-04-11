@@ -30,7 +30,7 @@ export const DialogPrivacyPolicy = () => {
 
   return (
     <Dialog open={_open} onOpenChange={handleClose}>
-      <DialogContent className="max-w-[768px]" close={false}>
+      <DialogContent className="max-w-3xl" close={false}>
         <DialogHeader separator>
           <DialogToolbar
             title={ROUTES.PRIVACY_POLICY.label}

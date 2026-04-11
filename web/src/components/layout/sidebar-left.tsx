@@ -83,9 +83,7 @@ const SidebarLeftProvider = forwardRef<HTMLDivElement, SidebarLeftProviderProps>
   const pathname = usePathname();
 
   // internal state of the sidebar.
-  const [_open, _setOpen] = useState<boolean>(
-    (_parsedOpen ?? defaultOpen) ?? false,
-  );
+  const [_open, _setOpen] = useState<boolean>(_parsedOpen ?? defaultOpen ?? false);
   const open = openProp ?? _open;
   const setOpenCallback = (value: boolean | ((value: boolean) => boolean)) => {
     const res = typeof value === 'function' ? value(open) : value;
