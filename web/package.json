@@ -39,6 +39,7 @@
     "@types/node": "^22.14.1",
     "@types/react": "^19.1.2",
     "@types/react-dom": "^19.1.2",
+    "postcss": "^8.5.9",
     "prettier": "^3.8.2",
     "tailwindcss": "^4.1.4",
     "typescript": "^5.8.3"

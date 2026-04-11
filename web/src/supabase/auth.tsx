@@ -48,14 +48,10 @@ const SupabaseAuthProvider = ({ children }: { children: ReactNode }) => {
 
   const value = useMemo<SupabaseAuthContext>(
     () => ({ user, pending, signOut }),
-    [user, pending, signOut],
+    [user, pending, signOut]
   );
 
-  return (
-    <SupabaseAuthContext.Provider value={value}>
-      {children}
-    </SupabaseAuthContext.Provider>
-  );
+  return <SupabaseAuthContext.Provider value={value}>{children}</SupabaseAuthContext.Provider>;
 };
 
 function useSupabaseUser() {
@@ -76,4 +72,10 @@ const Authenticated = ({ children }: { children: ReactNode }) => {
   return <>{children}</>;
 };
 
-export { SupabaseAuthProvider, Authenticated, useSupabaseUser, useSupabaseAuth };
+const Unauthenticated = ({ children }: { children: ReactNode }) => {
+  const { user, pending } = useSupabaseUser();
+  if (pending || user) return null;
+  return <>{children}</>;
+};
+
+export { SupabaseAuthProvider, Authenticated, Unauthenticated, useSupabaseUser, useSupabaseAuth };
