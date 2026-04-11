@@ -3,7 +3,6 @@ import { NextResponse, type NextRequest } from "next/server";
 
 export async function middleware(request: NextRequest) {
   let supabaseResponse = NextResponse.next({ request });
-
   const supabase = createServerClient(
     process.env.NEXT_PUBLIC_SUPABASE_URL!,
     process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!,
@@ -26,11 +25,9 @@ export async function middleware(request: NextRequest) {
       },
     },
   );
-
   // Refresh the auth token. Do NOT use getSession() here — only
   // getUser() sends a request to the Supabase Auth server to revalidate.
   await supabase.auth.getUser();
-
   return supabaseResponse;
 }
 

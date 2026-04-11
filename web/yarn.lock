@@ -658,6 +658,11 @@ postcss@^8.5.6:
     picocolors "^1.1.1"
     source-map-js "^1.2.1"
 
+prettier@^3.8.2:
+  version "3.8.2"
+  resolved "https://registry.yarnpkg.com/prettier/-/prettier-3.8.2.tgz#4f52e502193c9aa5b384c3d00852003e551bbd9f"
+  integrity sha512-8c3mgTe0ASwWAJK+78dpviD+A8EqhndQPUBpNUIPt6+xWlIigCwfN01lWr9MAede4uqXGTEKeQWTvzb3vjia0Q==
+
 react-dom@^19.1.0:
   version "19.2.5"
   resolved "https://registry.yarnpkg.com/react-dom/-/react-dom-19.2.5.tgz#b8768b10837d0b8e9ca5b9e2d58dff3d880ea25e"

@@ -1,7 +1,9 @@
-import { createClient } from "@/lib/supabase/server";
+import { createClient } from '@/lib/supabase/server';
+import { SampleList } from '@/app/sample-list';
 
 export default async function Home() {
   const supabase = await createClient();
+  const { data } = await supabase.from('sample').select('*').order('id');
 
   let connected;
   try {
@@ -13,11 +15,12 @@ export default async function Home() {
 
   return (
     <main className="flex min-h-screen flex-col items-center justify-center gap-8 p-8">
-      <h1 className="text-4xl font-bold tracking-tight">Next Supabase</h1>
       <div className="flex items-center gap-3 rounded-lg border border-zinc-800 bg-zinc-900 px-6 py-4">
-        <span className={`inline-block h-3 w-3 rounded-full ${connected ? "bg-emerald-500" : "bg-red-500"}`} />
+        <span
+          className={`inline-block h-3 w-3 rounded-full ${connected ? 'bg-emerald-500' : 'bg-red-500'}`}
+        />
         <span className="text-sm text-zinc-400">
-          Supabase: {connected ? "connected" : "unreachable"}
+          Supabase: {connected ? 'connected' : 'unreachable'}
         </span>
       </div>
       <div className="flex flex-col gap-2 max-w-md text-center text-sm text-zinc-500">
@@ -30,6 +33,7 @@ export default async function Home() {
           <p>to get started.</p>
         </div>
       </div>
+      <SampleList initialData={data as any[]} />
     </main>
   );
 }
