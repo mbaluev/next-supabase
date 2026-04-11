@@ -10,7 +10,7 @@ import { usePathname } from 'next/navigation';
 import { BREAD_CRUMBS } from '@/settings/bread-crumbs';
 import { BreadCrumbs } from '@/components/layout/bread-crumbs';
 import { useCallback, useEffect } from 'react';
-import { Authenticated } from 'convex/react';
+import { Authenticated } from '@/supabase/auth';
 
 const THEME_KEYBOARD_SHORTCUT = 't';
 
@@ -60,7 +60,7 @@ const HeaderLeft = () => {
   const pathname = usePathname();
   const breadCrumbs = BREAD_CRUMBS[pathname];
   return (
-    <div className="flex-grow flex flex-wrap gap-4">
+    <div className="grow flex flex-wrap gap-4">
       <Authenticated>
         <SidebarLeftTrigger />
       </Authenticated>
@@ -71,7 +71,7 @@ const HeaderLeft = () => {
 
 const Header = () => {
   return (
-    <header className="flex flex-col w-full z-[8] sticky top-0">
+    <header className="flex flex-col w-full z-8 sticky top-0">
       <div className="flex gap-4 justify-end items-start p-4 w-full bg-background">
         <HeaderLeft />
         <HeaderRight />

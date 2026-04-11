@@ -35,9 +35,7 @@ import { handleDialogOpen } from '@/components/ui/dialog-handlers';
 import { usePathname, useRouter, useSearchParams } from 'next/navigation';
 import { menuLeft } from '@/settings/menu';
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
-import { useCurrentUser } from '@/auth/use-current-user';
-import { useAuthActions } from '@convex-dev/auth/react';
-import { Authenticated } from 'convex/react';
+import { Authenticated, useSupabaseUser, useSupabaseAuth } from '@/supabase/auth';
 
 const MENU_PADDING_ITEM = 15;
 const MENU_TRANSITION_DURATION = 100;
@@ -249,10 +247,9 @@ const MenuUserInfo = () => {
   const searchParams = useSearchParams();
   const pathname = usePathname();
   const router = useRouter();
-  const { user, pending } = useCurrentUser();
-  const { signOut } = useAuthActions();
+  const { user, pending } = useSupabaseUser();
+  const { signOut } = useSupabaseAuth();
 
-  // handlers
   const handleLogout = async () => {
     await signOut();
   };
@@ -263,48 +260,24 @@ const MenuUserInfo = () => {
     router.replace(_pathname);
   };
 
-  if (pending) {
-    return (
-      <div className="p-4 flex flex-col space-y-4">
-        <div className="flex space-x-4 items-center">
-          <Avatar className="w-20 h-20 bg-secondary rounded-md">
-            <AvatarImage src={user?.image || ''} />
-            <AvatarFallback className="bg-secondary">
-              <User className="text-xl" />
-            </AvatarFallback>
-          </Avatar>
-          <div className="space-y-2 overflow-hidden flex-1">
-            <p className="overflow-hidden text-ellipsis">{user?.email ?? '-'}</p>
-            <p className="overflow-hidden text-ellipsis">{user?.name ?? '-'}</p>
-          </div>
-        </div>
-        <div className="flex flex-col space-y-2 ">
-          <SidebarLeftButton variant="ghost" onClick={handleLogout}>
-            <LogOut />
-            logout
-          </SidebarLeftButton>
-          <SidebarLeftButton variant="ghost" onClick={handleProfile}>
-            {ROUTES.PROFILE.icon}
-            <p className="flex-1 text-left">{ROUTES.PROFILE.label}</p>
-            {ROUTES.PROFILE.dialog && <BookOpen />}
-          </SidebarLeftButton>
-        </div>
-      </div>
-    );
-  }
+  if (pending) return null;
   if (!user) return null;
+
+  const avatarUrl = user.user_metadata?.avatar_url ?? '';
+  const displayName = user.user_metadata?.full_name ?? '-';
+
   return (
     <div className="p-4 flex flex-col space-y-4">
       <div className="flex space-x-4 items-center">
         <Avatar className="w-20 h-20 bg-secondary rounded-md">
-          <AvatarImage src={user?.image || ''} />
+          <AvatarImage src={avatarUrl} />
           <AvatarFallback className="bg-secondary">
             <User className="text-xl" />
           </AvatarFallback>
         </Avatar>
         <div className="space-y-2 overflow-hidden flex-1">
-          <p className="overflow-hidden text-ellipsis">{user?.email ?? '-'}</p>
-          <p className="overflow-hidden text-ellipsis">{user?.name ?? '-'}</p>
+          <p className="overflow-hidden text-ellipsis">{user.email ?? '-'}</p>
+          <p className="overflow-hidden text-ellipsis">{displayName}</p>
         </div>
       </div>
       <div className="flex flex-col space-y-2 ">

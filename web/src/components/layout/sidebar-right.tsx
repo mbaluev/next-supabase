@@ -18,7 +18,6 @@ import { cn } from '@/utils/cn';
 import { MEDIA_MD, useMatchMedia } from '@/hooks/use-match-media';
 import { Button } from '@/components/ui/button';
 import { ArrowLeftFromLine, ArrowRightToLine } from 'lucide-react';
-import { useCookies } from 'next-client-cookies';
 import { TRouteDTO } from '@/settings/routes';
 import { useWindowResize } from '@/hooks/use-window-resize';
 import { CTree, TTreeDTO } from '@/utils/tree';
@@ -66,9 +65,9 @@ type SidebarRightProviderBaseProps = {
 type SidebarRightProviderProps = ComponentProps<'div'> & SidebarRightProviderBaseProps;
 const SidebarRightProvider = forwardRef<HTMLDivElement, SidebarRightProviderProps>((props, ref) => {
   const { name = SIDEBAR_STORAGE_NAME, defaultOpen: __defaultOpen } = props;
-  const cookies = useCookies();
-  let _defaultOpen: any = cookies.get(name);
-  _defaultOpen = _defaultOpen ? _defaultOpen === 'true' : __defaultOpen;
+  let _defaultOpen: string | null =
+    typeof window !== 'undefined' ? localStorage.getItem(name) : null;
+  const _parsedOpen = _defaultOpen != null ? _defaultOpen === 'true' : __defaultOpen;
 
   const {
     data: initData,
@@ -86,15 +85,17 @@ const SidebarRightProvider = forwardRef<HTMLDivElement, SidebarRightProviderProp
   const pathname = usePathname();
 
   // internal state of the sidebar.
-  const [_open, _setOpen] = useState(_defaultOpen ?? defaultOpen);
+  const [_open, _setOpen] = useState<boolean>(
+    (_parsedOpen ?? defaultOpen) ?? false,
+  );
   const open = openProp ?? _open;
   const setOpenCallback = (value: boolean | ((value: boolean) => boolean)) => {
     const res = typeof value === 'function' ? value(open) : value;
     if (setOpenProp) return setOpenProp?.(res);
-    cookies.set(name || SIDEBAR_STORAGE_NAME, String(res));
-    _setOpen(value);
+    localStorage.setItem(name || SIDEBAR_STORAGE_NAME, String(res));
+    _setOpen(res);
   };
-  const setOpen = useCallback(setOpenCallback, [setOpenProp, open, cookies]);
+  const setOpen = useCallback(setOpenCallback, [setOpenProp, open, name]);
 
   // toggle the sidebar.
   const toggleCallback = () => {
@@ -145,8 +146,9 @@ const SidebarRightProvider = forwardRef<HTMLDivElement, SidebarRightProviderProp
 
   // resizing
   const SIDEBAR_RESIZE_NAME = `${name}_width`;
-  let _defaultWidth: any = cookies.get(SIDEBAR_RESIZE_NAME);
-  _defaultWidth = _defaultWidth ? Number(_defaultWidth) : SIDEBAR_WIDTH_MIN;
+  const _storedWidth =
+    typeof window !== 'undefined' ? localStorage.getItem(SIDEBAR_RESIZE_NAME) : null;
+  const _defaultWidth = _storedWidth ? Number(_storedWidth) : SIDEBAR_WIDTH_MIN;
   const [width, setWidth] = useState(_defaultWidth);
   const [resizing, setResizing] = useState(false);
   const isResizingRef = useRef(false);
@@ -169,7 +171,7 @@ const SidebarRightProvider = forwardRef<HTMLDivElement, SidebarRightProviderProp
     if (newWidth < SIDEBAR_WIDTH_MIN) newWidth = SIDEBAR_WIDTH_MIN;
     if (newWidth > SIDEBAR_WIDTH_MAX) newWidth = SIDEBAR_WIDTH_MAX;
     setWidth(newWidth);
-    cookies.set(SIDEBAR_RESIZE_NAME, String(newWidth));
+    localStorage.setItem(SIDEBAR_RESIZE_NAME, String(newWidth));
   };
   const handleMouseUp = () => {
     isResizingRef.current = false;
@@ -210,12 +212,7 @@ const SidebarRightProvider = forwardRef<HTMLDivElement, SidebarRightProviderProp
 
   return (
     <SidebarRightContext.Provider value={contextValue}>
-      <div
-        id={name}
-        className={cn('flex flex-grow min-h-full', className)}
-        ref={sidebarRef}
-        {..._props}
-      >
+      <div id={name} className={cn('flex grow min-h-full', className)} ref={sidebarRef} {..._props}>
         {children}
       </div>
     </SidebarRightContext.Provider>
