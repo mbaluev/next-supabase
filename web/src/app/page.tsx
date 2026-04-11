@@ -3,8 +3,6 @@ import { SampleList } from '@/app/sample-list';
 
 export default async function Home() {
   const supabase = await createClient();
-  const { data } = await supabase.from('sample').select('*').order('id');
-
   let connected;
   try {
     const { error } = await supabase.auth.getSession();
@@ -12,7 +10,7 @@ export default async function Home() {
   } catch {
     connected = false;
   }
-
+  const { data } = await supabase.from('sample').select('*').order('id');
   return (
     <main className="flex min-h-screen flex-col items-center justify-center gap-8 p-8">
       <div className="flex items-center gap-3 rounded-lg border border-zinc-800 bg-zinc-900 px-6 py-4">
