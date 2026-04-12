@@ -1,7 +1,7 @@
 import type { Viewport } from 'next';
 import type { Metadata } from 'next';
 import { JetBrains_Mono } from 'next/font/google';
-import { ReactNode } from 'react';
+import { ReactNode, Suspense } from 'react';
 import { Check, Info, OctagonX, TriangleAlert } from 'lucide-react';
 import { SupabaseAuthProvider } from '@/supabase/auth';
 import { ThemeProvider } from '@/components/layout/theme';
@@ -39,10 +39,12 @@ export default async function RootLayout({ children }: { children: ReactNode }) 
       <body className={font.className}>
         <SupabaseAuthProvider>
           <ThemeProvider attribute="class" defaultTheme="system" enableSystem>
-            <Layout>{children}</Layout>
-            <DialogProfile />
-            <DialogPrivacyPolicy />
-            <DialogTermsConditions />
+            <Suspense>
+              <Layout>{children}</Layout>
+              <DialogProfile />
+              <DialogPrivacyPolicy />
+              <DialogTermsConditions />
+            </Suspense>
             <Toaster
               visibleToasts={5}
               position="bottom-right"

@@ -38,7 +38,7 @@ const HeaderThemeBtn = () => {
     <TooltipText title="switch theme" side="left">
       <Button variant="ghost" size="icon" onClick={handleChangeTheme} className="grow-0">
         <Moon className="rotate-90 scale-0 transition-transform ease-in-out duration-500 dark:rotate-0 dark:scale-100" />
-        <Sun className="rotate-0 scale-1000 transition-transform ease-in-out duration-500 dark:-rotate-90 dark:scale-0 absolute" />
+        <Sun className="rotate-0 scale-100 transition-transform ease-in-out duration-500 dark:-rotate-90 dark:scale-0 absolute" />
       </Button>
     </TooltipText>
   );
