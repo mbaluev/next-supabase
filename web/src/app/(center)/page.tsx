@@ -10,7 +10,7 @@ export default function Home() {
     <div className="space-y-10 text-center">
       <div className="flex gap-8 flex-col items-center justify-center">
         <SvgLogo className="text-5xl" />
-        <h1 className="text-5xl font-semibold">{process.env.APP_NAME}</h1>
+        <h1 className="text-5xl font-semibold">{process.env.NEXT_PUBLIC_APP_NAME}</h1>
       </div>
       <div className="flex gap-1 flex-col items-center text-muted-foreground">
         <p>authentication service</p>

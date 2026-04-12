@@ -218,7 +218,7 @@ const MenuLeftContent = () => {
         <SidebarLeftButton asChild variant="ghost" className="flex-1">
           <Link href={ROUTES.HOME.path}>
             <SvgLogo className="w-6 h-6" />
-            <p>{process.env.APP_NAME}</p>
+            <p>{process.env.NEXT_PUBLIC_APP_NAME}</p>
           </Link>
         </SidebarLeftButton>
         <Button variant="ghost" size="icon" onClick={toggleSidebar}>

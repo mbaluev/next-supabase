@@ -30,7 +30,7 @@ export const Footer = () => {
       <Button variant="link" className="px-0 py-0 h-auto" asChild>
         <Link href={ROUTES.HOME.path}>
           <Copyright />
-          <p>{`${new Date().getFullYear()} ${process.env.APP_NAME}`}</p>
+          <p>{`${new Date().getFullYear()} ${process.env.NEXT_PUBLIC_APP_NAME}`}</p>
         </Link>
       </Button>
       <Dot className="text-primary" />

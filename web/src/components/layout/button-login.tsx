@@ -33,7 +33,7 @@ export const ButtonLogin = (props: LoginButtonProps) => {
         </DialogTrigger>
         <DialogContent className="max-w-lg">
           <DialogHeader separator>
-            <DialogToolbar title={process.env.APP_NAME} icon={<SvgLogo />} close />
+            <DialogToolbar title={process.env.NEXT_PUBLIC_APP_NAME} icon={<SvgLogo />} close />
             <DialogDescription>welcome back</DialogDescription>
           </DialogHeader>
           <WidgetContent variant="dialog" className="overflow-y-auto">
