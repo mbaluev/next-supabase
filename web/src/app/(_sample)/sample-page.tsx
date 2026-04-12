@@ -1,6 +1,6 @@
 import { createClient } from '@/supabase/server';
-import { SampleList } from '@/app/sample-list';
-import type { Sample } from '@/app/use-sample-list';
+import { SampleList } from '@/app/(_sample)/sample-list';
+import type { Sample } from '@/app/(_sample)/use-sample-list';
 
 export default async function Home() {
   const supabase = await createClient();

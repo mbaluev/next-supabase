@@ -1,6 +1,6 @@
 'use client';
 
-import { useSampleList, type Sample } from '@/app/use-sample-list';
+import { useSampleList, type Sample } from '@/app/(_sample)/use-sample-list';
 
 export function SampleList({ initialData }: { initialData: Sample[] }) {
   const { samples } = useSampleList(initialData);
