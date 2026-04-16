@@ -29,7 +29,7 @@ const Widget = React.forwardRef<HTMLDivElement, WidgetProps>(
 );
 Widget.displayName = 'Widget';
 
-const widgetHeaderVariants = cva('flex flex-0 flex-wrap gap-2 justify-between', {
+const widgetHeaderVariants = cva('flex grow-0 flex-wrap gap-2 justify-between', {
   variants: {
     variant: {
       default: '',
@@ -49,7 +49,7 @@ const WidgetHeader = React.forwardRef<HTMLDivElement, WidgetHeaderProps>(
   ({ className, variant, separator, ...props }, ref) => {
     if (separator) {
       return (
-        <div className="flex flex-col sticky top-[57px] z-[5]">
+        <div className="flex flex-col sticky top-[57px] z-5">
           <div ref={ref} className={cn(widgetHeaderVariants({ variant, className }))} {...props} />
           <Separator />
         </div>
@@ -64,7 +64,7 @@ WidgetHeader.displayName = 'WidgetHeader';
 
 const WidgetIcon = React.forwardRef<HTMLDivElement, React.HTMLAttributes<HTMLHeadingElement>>(
   ({ className, ...props }, ref) => (
-    <div ref={ref} className={cn('flex-0 p-2', className)} {...props} />
+    <div ref={ref} className={cn('grow-0 p-2', className)} {...props} />
   )
 );
 WidgetIcon.displayName = 'WidgetIcon';
@@ -73,13 +73,13 @@ const WidgetTitle = React.forwardRef<
   HTMLParagraphElement,
   React.HTMLAttributes<HTMLHeadingElement>
 >(({ className, ...props }, ref) => (
-  <h3 ref={ref} className={cn('flex-1 pt-2 text-left', className)} {...props} />
+  <h3 ref={ref} className={cn('grow pt-2 text-left', className)} {...props} />
 ));
 WidgetTitle.displayName = 'WidgetTitle';
 
 const WidgetButtons = React.forwardRef<HTMLParagraphElement, React.HTMLAttributes<HTMLDivElement>>(
   ({ className, ...props }, ref) => (
-    <div ref={ref} className={cn('flex-0 flex flex-wrap gap-4', className)} {...props} />
+    <div ref={ref} className={cn('grow-0 flex flex-wrap gap-4', className)} {...props} />
   )
 );
 WidgetButtons.displayName = 'WidgetButtons';
