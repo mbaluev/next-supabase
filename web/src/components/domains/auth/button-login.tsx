@@ -1,6 +1,7 @@
 'use client';
 
 import { useRouter } from 'next/navigation';
+import { SvgLogo } from '@/components/icons/components/logo';
 import { Button, ButtonProps } from '@/components/ui/button';
 import {
   Dialog,
@@ -10,7 +11,6 @@ import {
   DialogToolbar,
   DialogTrigger,
 } from '@/components/ui/dialog';
-import { SvgLogo } from '@/components/icons/components/logo';
 import { WidgetContent } from '@/components/layout/widget';
 import { FormLogin } from '@/components/domains/auth/form-login';
 

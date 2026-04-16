@@ -28,7 +28,7 @@ export const DialogProfile = () => {
 
   return (
     <Dialog open={_open} onOpenChange={handleClose}>
-      <DialogContent onClose={handleClose} className="max-w-[768px]" close={false}>
+      <DialogContent onClose={handleClose} className="max-w-3xl" close={false}>
         <DialogHeader separator>
           <DialogToolbar title={ROUTES.PROFILE.label} icon={ROUTES.PROFILE.icon} close />
           <DialogDescription>
