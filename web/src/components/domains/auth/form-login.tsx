@@ -89,7 +89,7 @@ export const FormLogin = () => {
                     disabled={pending}
                     placeholder="enter email"
                     type="email"
-                    autoComplete="email"
+                    autoComplete="new-password"
                   />
                 </FormControl>
                 <FormMessage />
@@ -106,7 +106,7 @@ export const FormLogin = () => {
                     {...field}
                     disabled={pending}
                     placeholder="enter password"
-                    autoComplete="current-password"
+                    autoComplete="new-password"
                   />
                 </FormControl>
                 <FormMessage />
