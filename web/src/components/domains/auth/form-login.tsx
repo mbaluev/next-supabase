@@ -17,7 +17,7 @@ import { FaGithub } from 'react-icons/fa';
 import { createClient } from '@/supabase/client';
 
 function safeNextPath(next: string | null): string {
-  if (!next || !next.startsWith('/') || next.startsWith('//')) return '/dashboard';
+  if (!next || !next.startsWith('/') || next.startsWith('//')) return '/';
   return next;
 }
 

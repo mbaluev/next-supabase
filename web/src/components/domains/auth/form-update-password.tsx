@@ -47,7 +47,7 @@ export const FormUpdatePassword = () => {
       }
       form.reset();
       toast.success('password updated');
-      router.push('/dashboard');
+      router.push('/');
       router.refresh();
     });
   };

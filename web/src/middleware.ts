@@ -1,5 +1,7 @@
 import { createServerClient, type CookieOptions } from '@supabase/ssr';
 import { NextResponse, type NextRequest } from 'next/server';
+import { SUPABASE_COOKIE_NAME } from '@/supabase/const';
+import { getRequestOrigin } from '@/utils/request-origin';
 
 const PROTECTED_PREFIXES = [
   '/dashboard',
@@ -15,12 +17,19 @@ function matchesPath(pathname: string, prefix: string) {
   return pathname === prefix || pathname.startsWith(`${prefix}/`);
 }
 
+function withSupabaseCookies(target: NextResponse, source: NextResponse): NextResponse {
+  source.cookies.getAll().forEach((cookie) => target.cookies.set(cookie));
+  target.headers.set('Cache-Control', 'private, no-store');
+  return target;
+}
+
 export async function middleware(request: NextRequest) {
   let supabaseResponse = NextResponse.next({ request });
   const supabase = createServerClient(
-    process.env.NEXT_PUBLIC_SUPABASE_URL!,
-    process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!,
+    process.env.SUPABASE_URL ?? process.env.NEXT_PUBLIC_SUPABASE_URL!,
+    process.env.SUPABASE_ANON_KEY ?? process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!,
     {
+      cookieOptions: { name: SUPABASE_COOKIE_NAME },
       cookies: {
         getAll() {
           return request.cookies.getAll();
@@ -38,30 +47,18 @@ export async function middleware(request: NextRequest) {
 
   const { data } = await supabase.auth.getUser();
   const { user } = data;
-
   const pathname = request.nextUrl.pathname;
+  const origin = getRequestOrigin(request);
   const isProtected = PROTECTED_PREFIXES.some((p) => matchesPath(pathname, p));
+
   if (isProtected && !user) {
-    const url = request.nextUrl.clone();
-    url.pathname = '/auth/login';
+    const url = new URL('/auth/login', origin);
     url.searchParams.set('next', pathname);
-    const redirectResponse = NextResponse.redirect(url);
-    supabaseResponse.cookies.getAll().forEach((cookie) => {
-      redirectResponse.cookies.set(cookie);
-    });
-    redirectResponse.headers.set('Cache-Control', 'private, no-store');
-    return redirectResponse;
+    return withSupabaseCookies(NextResponse.redirect(url), supabaseResponse);
   }
   if (user && (matchesPath(pathname, '/auth/login') || matchesPath(pathname, '/auth/register'))) {
-    const url = request.nextUrl.clone();
-    url.pathname = '/dashboard';
-    url.search = '';
-    const redirectResponse = NextResponse.redirect(url);
-    supabaseResponse.cookies.getAll().forEach((cookie) => {
-      redirectResponse.cookies.set(cookie.name, cookie.value);
-    });
-    redirectResponse.headers.set('Cache-Control', 'private, no-store');
-    return redirectResponse;
+    const url = new URL('/', origin);
+    return withSupabaseCookies(NextResponse.redirect(url), supabaseResponse);
   }
 
   supabaseResponse.headers.set('Cache-Control', 'private, no-store');

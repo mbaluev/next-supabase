@@ -1,5 +1,6 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { createClient } from '@/supabase/server';
+import { getRequestOrigin } from '@/utils/request-origin';
 
 function safePath(value: string | null): string | null {
   if (!value || !value.startsWith('/') || value.startsWith('//')) return null;
@@ -7,11 +8,10 @@ function safePath(value: string | null): string | null {
 }
 
 export async function GET(request: NextRequest) {
-  const { searchParams, origin } = new URL(request.url);
-  const code = searchParams.get('code');
-  const nextPath = safePath(searchParams.get('next')) ?? '/dashboard';
+  const origin = getRequestOrigin(request);
+  const code = request.nextUrl.searchParams.get('code');
+  const nextPath = safePath(request.nextUrl.searchParams.get('next')) ?? '/';
   const errorUrl = new URL('/auth/error', origin);
-
   if (code) {
     const supabase = await createClient();
     const { error } = await supabase.auth.exchangeCodeForSession(code);
@@ -19,7 +19,6 @@ export async function GET(request: NextRequest) {
       return NextResponse.redirect(new URL(nextPath, origin));
     }
   }
-
   return NextResponse.redirect(errorUrl);
 }
 
