@@ -14,7 +14,6 @@ import { createClient } from '@/supabase/client';
 export const FormReset = () => {
   const [pending, startTransition] = useTransition();
   const [error, setError] = useState<string | undefined>();
-
   const form = useForm({
     defaultValues: {
       email: '',
@@ -24,11 +23,8 @@ export const FormReset = () => {
   const handleReset = async (values: { email: string }) => {
     setError(undefined);
     startTransition(async () => {
-      const origin = typeof window !== 'undefined' ? window.location.origin : '';
       const supabase = createClient();
-      const { error: resetError } = await supabase.auth.resetPasswordForEmail(values.email.trim(), {
-        redirectTo: `${origin}/auth/confirm?next=${encodeURIComponent('/auth/update-password')}`,
-      });
+      const { error: resetError } = await supabase.auth.resetPasswordForEmail(values.email.trim());
       if (resetError) {
         setError(resetError.message);
         toast.error(resetError.message);

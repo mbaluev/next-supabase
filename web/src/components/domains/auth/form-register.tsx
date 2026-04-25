@@ -15,7 +15,6 @@ import { createClient } from '@/supabase/client';
 export const FormRegister = () => {
   const [pending, startTransition] = useTransition();
   const [error, setError] = useState<string | undefined>();
-
   const form = useForm({
     defaultValues: {
       name: '',
@@ -27,15 +26,11 @@ export const FormRegister = () => {
   const handleRegister = async (values: { name: string; email: string; password: string }) => {
     setError(undefined);
     startTransition(async () => {
-      const origin = typeof window !== 'undefined' ? window.location.origin : '';
       const supabase = createClient();
       const { error: signUpError } = await supabase.auth.signUp({
         email: values.email.trim(),
         password: values.password,
-        options: {
-          data: { full_name: values.name.trim() },
-          emailRedirectTo: `${origin}/auth/confirm?next=${encodeURIComponent('/')}`,
-        },
+        options: { data: { full_name: values.name.trim() } },
       });
       if (signUpError) {
         setError(signUpError.message);

@@ -16,17 +16,11 @@ import { FcGoogle } from 'react-icons/fc';
 import { FaGithub } from 'react-icons/fa';
 import { createClient } from '@/supabase/client';
 
-function safeNextPath(next: string | null): string {
-  if (!next || !next.startsWith('/') || next.startsWith('//')) return '/';
-  return next;
-}
-
 export const FormLogin = () => {
   const router = useRouter();
   const searchParams = useSearchParams();
   const [pending, startTransition] = useTransition();
   const [error, setError] = useState<string | undefined>();
-
   const form = useForm({
     defaultValues: {
       email: '',
@@ -48,19 +42,18 @@ export const FormLogin = () => {
         return;
       }
       form.reset();
-      const destination = safeNextPath(searchParams.get('next'));
+      const destination = searchParams.get('next') ?? '/';
       router.push(destination);
       router.refresh();
     });
   };
-
   const handleOAuth = async (e: MouseEvent<HTMLButtonElement>, provider: 'google' | 'github') => {
     e.preventDefault();
     setError(undefined);
-    const origin = typeof window !== 'undefined' ? window.location.origin : '';
     startTransition(async () => {
       const supabase = createClient();
-      const next = safeNextPath(searchParams.get('next'));
+      const origin = typeof window !== 'undefined' ? window.location.origin : '';
+      const next = searchParams.get('next') ?? '/';
       const { error: oauthError } = await supabase.auth.signInWithOAuth({
         provider,
         options: {

@@ -33,11 +33,9 @@ export const FormSettings = (props: IProps) => {
     name: (u?.user_metadata?.full_name as string | undefined) ?? '',
     email: u?.email ?? '',
   });
-
   const form = useForm({
     defaultValues: values(user),
   });
-
   useEffect(() => {
     form.reset(values(user));
   }, [user?.id, user?.email, user?.user_metadata]);

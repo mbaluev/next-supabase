@@ -5,7 +5,7 @@ import { Button } from '@/components/ui/button';
 import { Spinner } from '@/components/ui/spinner';
 
 interface HeaderProps {
-  label?: string;
+  label?: string | null;
   loading?: boolean;
 }
 
