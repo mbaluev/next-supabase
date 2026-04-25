@@ -1,6 +1,20 @@
 import { createServerClient, type CookieOptions } from '@supabase/ssr';
 import { NextResponse, type NextRequest } from 'next/server';
 
+const PROTECTED_PREFIXES = [
+  '/dashboard',
+  '/debug',
+  '/files',
+  '/illustrations',
+  '/partners',
+  '/users',
+  '/auth/update-password',
+];
+
+function matchesPath(pathname: string, prefix: string) {
+  return pathname === prefix || pathname.startsWith(`${prefix}/`);
+}
+
 export async function middleware(request: NextRequest) {
   let supabaseResponse = NextResponse.next({ request });
   const supabase = createServerClient(
@@ -21,9 +35,36 @@ export async function middleware(request: NextRequest) {
       },
     }
   );
-  // Refresh the auth token. Do NOT use getSession() here — only
-  // getUser() sends a request to the Supabase Auth server to revalidate.
-  await supabase.auth.getUser();
+
+  const { data } = await supabase.auth.getUser();
+  const { user } = data;
+
+  const pathname = request.nextUrl.pathname;
+  const isProtected = PROTECTED_PREFIXES.some((p) => matchesPath(pathname, p));
+  if (isProtected && !user) {
+    const url = request.nextUrl.clone();
+    url.pathname = '/auth/login';
+    url.searchParams.set('next', pathname);
+    const redirectResponse = NextResponse.redirect(url);
+    supabaseResponse.cookies.getAll().forEach((cookie) => {
+      redirectResponse.cookies.set(cookie);
+    });
+    redirectResponse.headers.set('Cache-Control', 'private, no-store');
+    return redirectResponse;
+  }
+  if (user && (matchesPath(pathname, '/auth/login') || matchesPath(pathname, '/auth/register'))) {
+    const url = request.nextUrl.clone();
+    url.pathname = '/dashboard';
+    url.search = '';
+    const redirectResponse = NextResponse.redirect(url);
+    supabaseResponse.cookies.getAll().forEach((cookie) => {
+      redirectResponse.cookies.set(cookie.name, cookie.value);
+    });
+    redirectResponse.headers.set('Cache-Control', 'private, no-store');
+    return redirectResponse;
+  }
+
+  supabaseResponse.headers.set('Cache-Control', 'private, no-store');
   return supabaseResponse;
 }
 

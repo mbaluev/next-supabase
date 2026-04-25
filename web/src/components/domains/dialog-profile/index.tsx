@@ -12,6 +12,7 @@ import {
   DialogToolbar,
 } from '@/components/ui/dialog';
 import { WidgetContent } from '@/components/layout/widget';
+import { FormSettings } from '@/components/domains/auth/form-settings';
 
 export const DialogProfile = () => {
   const searchParams = useSearchParams();
@@ -39,7 +40,7 @@ export const DialogProfile = () => {
           </DialogDescription>
         </DialogHeader>
         <WidgetContent variant="dialog" className="overflow-y-auto">
-          ...
+          <FormSettings onClose={handleClose} />
         </WidgetContent>
       </DialogContent>
     </Dialog>

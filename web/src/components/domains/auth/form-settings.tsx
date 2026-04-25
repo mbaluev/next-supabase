@@ -16,6 +16,8 @@ import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
 import { Input } from '@/components/ui/input';
 import { Button } from '@/components/ui/button';
 import { Spinner } from '@/components/ui/spinner';
+import { useSupabaseUser } from '@/supabase/auth';
+import { createClient } from '@/supabase/client';
 
 interface IProps {
   onClose?: () => void;
@@ -23,25 +25,37 @@ interface IProps {
 
 export const FormSettings = (props: IProps) => {
   const { onClose } = props;
-  const user = {} as any;
+  const { user, pending: userPending } = useSupabaseUser();
   const [pending, startTransition] = useTransition();
 
-  const values = (user: any) => ({
-    _id: user?._id || undefined,
-    name: user?.name || undefined,
-    email: user?.email || undefined,
+  const values = (u: typeof user) => ({
+    _id: u?.id ?? '',
+    name: (u?.user_metadata?.full_name as string | undefined) ?? '',
+    email: u?.email ?? '',
   });
+
   const form = useForm({
     defaultValues: values(user),
   });
+
   useEffect(() => {
     form.reset(values(user));
-  }, [form, user]);
-  const handleError = async (error: any) => {
-    console.log('-->', error);
-    toast.error(String(error));
+  }, [user?.id, user?.email, user?.user_metadata]);
+
+  const handleSettings = (formValues: { _id: string; name: string; email: string }) => {
+    startTransition(async () => {
+      const supabase = createClient();
+      const { error } = await supabase.auth.updateUser({
+        data: { full_name: formValues.name.trim() },
+      });
+      if (error) {
+        toast.error(error.message);
+        return;
+      }
+      toast.success('profile saved');
+      onClose?.();
+    });
   };
-  const handleSettings = (values: any) => {};
 
   const _formItem = 'grid gap-x-6 gap-y-4 grid-cols-1 sm:grid-cols-3 space-y-0';
   const _formLabel = 'flex items-center md:justify-end text-muted-foreground';
@@ -49,12 +63,16 @@ export const FormSettings = (props: IProps) => {
   const _formMessage = 'sm:col-span-2 sm:col-start-2';
   const _buttonSubmit = 'sm:col-start-2 sm:col-span-2 md:col-start-3';
 
+  if (userPending || !user) {
+    return null;
+  }
+
   return (
     <Form {...form}>
       <form className="space-y-12" onSubmit={form.handleSubmit(handleSettings)}>
         <div className="space-x-6 flex flex-row">
           <Avatar className="w-20 h-20 bg-secondary rounded-md">
-            <AvatarImage src={user?.image || ''} />
+            <AvatarImage src={(user.user_metadata?.avatar_url as string | undefined) ?? ''} />
             <AvatarFallback className="bg-secondary">
               <User className="text-xl" />
             </AvatarFallback>
@@ -63,14 +81,14 @@ export const FormSettings = (props: IProps) => {
             <FormItem className={_formItem}>
               <FormLabel className={_formLabel}>id</FormLabel>
               <FormControl className={_formControl}>
-                <p className="text-ellipsis">{user?._id}</p>
+                <p className="text-ellipsis">{user.id}</p>
               </FormControl>
               <FormMessage className={_formMessage} />
             </FormItem>
             <FormItem className={_formItem}>
               <FormLabel className={_formLabel}>email</FormLabel>
               <FormControl className={_formControl}>
-                <p className="text-ellipsis">{user?.email}</p>
+                <p className="text-ellipsis">{user.email}</p>
               </FormControl>
               <FormMessage className={_formMessage} />
             </FormItem>

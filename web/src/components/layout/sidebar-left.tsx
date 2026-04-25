@@ -62,11 +62,6 @@ type SidebarLeftProviderBaseProps = {
 };
 type SidebarLeftProviderProps = ComponentProps<'div'> & SidebarLeftProviderBaseProps;
 const SidebarLeftProvider = forwardRef<HTMLDivElement, SidebarLeftProviderProps>((props, ref) => {
-  const { name = SIDEBAR_STORAGE_NAME, defaultOpen: __defaultOpen } = props;
-  let _defaultOpen: string | null =
-    typeof window !== 'undefined' ? localStorage.getItem(name) : null;
-  const _parsedOpen = _defaultOpen != null ? _defaultOpen === 'true' : __defaultOpen;
-
   const {
     data: initData,
     name: _name,
@@ -78,12 +73,21 @@ const SidebarLeftProvider = forwardRef<HTMLDivElement, SidebarLeftProviderProps>
     children,
     ..._props
   } = props;
+  const { name = SIDEBAR_STORAGE_NAME } = props;
   const isMobile = useMatchMedia(MEDIA_MD);
   const [openMobile, setOpenMobile] = useState(false);
   const pathname = usePathname();
 
   // internal state of the sidebar.
-  const [_open, _setOpen] = useState<boolean>(_parsedOpen ?? defaultOpen ?? false);
+  const [_open, _setOpen] = useState<boolean>(defaultOpen ?? false);
+
+  // sync initial value from localStorage after mount to avoid hydration mismatch
+  const [hydrated, setHydrated] = useState(false);
+  useEffect(() => {
+    const stored = localStorage.getItem(name);
+    if (stored != null) _setOpen(stored === 'true');
+    setHydrated(true);
+  }, [name]);
   const open = openProp ?? _open;
   const setOpenCallback = (value: boolean | ((value: boolean) => boolean)) => {
     const res = typeof value === 'function' ? value(open) : value;
@@ -142,10 +146,11 @@ const SidebarLeftProvider = forwardRef<HTMLDivElement, SidebarLeftProviderProps>
 
   // resizing
   const SIDEBAR_RESIZE_NAME = `${name}_width`;
-  const _storedWidth =
-    typeof window !== 'undefined' ? localStorage.getItem(SIDEBAR_RESIZE_NAME) : null;
-  const _defaultWidth = _storedWidth ? Number(_storedWidth) : SIDEBAR_WIDTH_MIN;
-  const [width, setWidth] = useState(_defaultWidth);
+  const [width, setWidth] = useState(SIDEBAR_WIDTH_MIN);
+  useEffect(() => {
+    const stored = localStorage.getItem(SIDEBAR_RESIZE_NAME);
+    if (stored) setWidth(Number(stored));
+  }, [SIDEBAR_RESIZE_NAME]);
   const [resizing, setResizing] = useState(false);
   const isResizingRef = useRef(false);
   const handleResize = (e: React.MouseEvent<HTMLDivElement, MouseEvent>) => {

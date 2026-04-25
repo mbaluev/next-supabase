@@ -3,6 +3,7 @@
 import Link from 'next/link';
 import { useForm } from 'react-hook-form';
 import { MouseEvent, useState, useTransition } from 'react';
+import { useRouter, useSearchParams } from 'next/navigation';
 import { toast } from 'sonner';
 import { Form, FormControl, FormField, FormItem, FormMessage } from '@/components/ui/form';
 import { Input } from '@/components/ui/input';
@@ -13,8 +14,16 @@ import { Spinner } from '@/components/ui/spinner';
 import { ButtonBack } from '@/components/domains/auth/button-back';
 import { FcGoogle } from 'react-icons/fc';
 import { FaGithub } from 'react-icons/fa';
+import { createClient } from '@/supabase/client';
+
+function safeNextPath(next: string | null): string {
+  if (!next || !next.startsWith('/') || next.startsWith('//')) return '/dashboard';
+  return next;
+}
 
 export const FormLogin = () => {
+  const router = useRouter();
+  const searchParams = useSearchParams();
   const [pending, startTransition] = useTransition();
   const [error, setError] = useState<string | undefined>();
 
@@ -24,15 +33,46 @@ export const FormLogin = () => {
       password: '',
     },
   });
-  const handleSuccess = async () => {
-    form.reset();
+
+  const handlePassword = async (values: { email: string; password: string }) => {
+    setError(undefined);
+    startTransition(async () => {
+      const supabase = createClient();
+      const { error: signInError } = await supabase.auth.signInWithPassword({
+        email: values.email.trim(),
+        password: values.password,
+      });
+      if (signInError) {
+        setError(signInError.message);
+        toast.error(signInError.message);
+        return;
+      }
+      form.reset();
+      const destination = safeNextPath(searchParams.get('next'));
+      router.push(destination);
+      router.refresh();
+    });
   };
-  const handleError = async (error: any) => {
-    console.log('-->', error);
-    toast.error(String(error));
+
+  const handleOAuth = async (e: MouseEvent<HTMLButtonElement>, provider: 'google' | 'github') => {
+    e.preventDefault();
+    setError(undefined);
+    const origin = typeof window !== 'undefined' ? window.location.origin : '';
+    startTransition(async () => {
+      const supabase = createClient();
+      const next = safeNextPath(searchParams.get('next'));
+      const { error: oauthError } = await supabase.auth.signInWithOAuth({
+        provider,
+        options: {
+          redirectTo: `${origin}/auth/callback?next=${encodeURIComponent(next)}`,
+        },
+      });
+      if (oauthError) {
+        setError(oauthError.message);
+        toast.error(oauthError.message);
+      }
+    });
   };
-  const handlePassword = async (values: any) => {};
-  const handleOAuth = async (e: MouseEvent<HTMLButtonElement>, provider: 'google' | 'github') => {};
 
   return (
     <Form {...form}>
@@ -49,7 +89,7 @@ export const FormLogin = () => {
                     disabled={pending}
                     placeholder="enter email"
                     type="email"
-                    autoComplete="new-password"
+                    autoComplete="email"
                   />
                 </FormControl>
                 <FormMessage />
@@ -66,7 +106,7 @@ export const FormLogin = () => {
                     {...field}
                     disabled={pending}
                     placeholder="enter password"
-                    autoComplete="new-password"
+                    autoComplete="current-password"
                   />
                 </FormControl>
                 <FormMessage />
@@ -84,6 +124,7 @@ export const FormLogin = () => {
         </Button>
         <div className="flex items-center w-full gap-x-6">
           <Button
+            type="button"
             className="w-full"
             variant="outline"
             onClick={(e) => handleOAuth(e, 'google')}
@@ -92,6 +133,7 @@ export const FormLogin = () => {
             <FcGoogle className="h-8 w-8" />
           </Button>
           <Button
+            type="button"
             className="w-full"
             variant="outline"
             onClick={(e) => handleOAuth(e, 'github')}

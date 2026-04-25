@@ -48,7 +48,7 @@ export default async function RootLayout({ children }: { children: ReactNode }) 
             <Toaster
               visibleToasts={5}
               position="bottom-right"
-              className={font.className}
+              style={{ fontFamily: font.style.fontFamily }}
               toastOptions={{
                 unstyled: true,
                 classNames: {

@@ -252,6 +252,8 @@ const MenuUserInfo = () => {
 
   const handleLogout = async () => {
     await signOut();
+    router.push('/');
+    router.refresh();
   };
   const handleProfile = () => {
     const params = new URLSearchParams(searchParams.toString());
