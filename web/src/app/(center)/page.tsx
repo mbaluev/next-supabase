@@ -13,20 +13,18 @@ export default function Home() {
         <h1 className="text-5xl font-semibold">{process.env.NEXT_PUBLIC_APP_NAME}</h1>
       </div>
       <div className="flex gap-1 flex-col items-center text-muted-foreground">
-        <p>authentication service</p>
         <div className="flex gap-2 flex-wrap justify-center">
           <p>next.js</p>
           <Dot />
+          <p>supabase</p>
+        </div>
+        <div className="flex gap-2 flex-wrap justify-center">
           <p>tailwind</p>
           <Dot />
-          <p>lucide icons</p>
-        </div>
-        <div className="flex gap-2 flex-wrap items-center">
-          <p>layouts</p>
+          <p>lucide</p>
           <Dot />
-          <p>sidebar resizable</p>
+          <p>d3.js</p>
         </div>
-        <p>d3.js charts</p>
       </div>
       <Unauthenticated>
         <div className="grid grid-cols-1 gap-6">
