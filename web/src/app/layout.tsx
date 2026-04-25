@@ -8,7 +8,6 @@ import { SupabaseAuthProvider } from '@/supabase/auth-client';
 import { ThemeProvider } from '@/components/layout/theme';
 import { Layout } from '@/components/layout/layout';
 import { Toaster } from '@/components/ui/sonner';
-import { DialogProfile } from '@/components/domains/dialog-profile';
 import { DialogPrivacyPolicy } from '@/components/domains/dialog-privacy-policy';
 import { DialogTermsConditions } from '@/components/domains/dialog-terms-conditions';
 import { Spinner } from '@/components/ui/spinner';
@@ -56,7 +55,6 @@ export default async function RootLayout({ children }: { children: ReactNode }) 
               >
                 {children}
               </Layout>
-              <DialogProfile />
               <DialogPrivacyPolicy />
               <DialogTermsConditions />
             </Suspense>

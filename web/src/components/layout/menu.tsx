@@ -214,21 +214,12 @@ MenuLeftContent.displayName = 'MenuLeftContent';
 const MenuUserInfo = () => {
   const { user, pending } = useSupabaseUser();
   const { signOut } = useSupabaseAuth();
-
-  const searchParams = useSearchParams();
-  const pathname = usePathname();
   const router = useRouter();
 
   const handleLogout = async () => {
     await signOut();
     router.push('/');
     router.refresh();
-  };
-  const handleProfile = () => {
-    const params = new URLSearchParams(searchParams.toString());
-    const _params = handleDialogOpen(params, ROUTES.PROFILE.name);
-    const _pathname = _params.size > 0 ? `${pathname}?${_params.toString()}` : pathname;
-    router.replace(_pathname);
   };
 
   if (pending) return null;
@@ -255,11 +246,6 @@ const MenuUserInfo = () => {
         <SidebarLeftButton variant="ghost" onClick={handleLogout}>
           <LogOut />
           logout
-        </SidebarLeftButton>
-        <SidebarLeftButton variant="ghost" onClick={handleProfile}>
-          {ROUTES.PROFILE.icon}
-          <p className="flex-1 text-left">{ROUTES.PROFILE.label}</p>
-          {ROUTES.PROFILE.dialog && <BookOpen />}
         </SidebarLeftButton>
       </div>
     </div>
