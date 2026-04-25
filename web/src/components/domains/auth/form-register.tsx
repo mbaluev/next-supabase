@@ -9,8 +9,8 @@ import { InputPassword } from '@/components/ui/input-password';
 import { AlertError } from '@/components/ui/alert';
 import { Button } from '@/components/ui/button';
 import { Spinner } from '@/components/ui/spinner';
-import { ButtonBack } from '@/components/domains/auth/button-back';
 import { createClient } from '@/supabase/client';
+import Link from 'next/link';
 
 export const FormRegister = () => {
   const [pending, startTransition] = useTransition();
@@ -104,7 +104,9 @@ export const FormRegister = () => {
           {pending && <Spinner />}
           create an account
         </Button>
-        <ButtonBack href="/auth/login" label="already have an account?" />
+        <Button variant="link" size="link" className="w-full" asChild>
+          <Link href="/auth/login">already have an account?</Link>
+        </Button>
       </form>
     </Form>
   );

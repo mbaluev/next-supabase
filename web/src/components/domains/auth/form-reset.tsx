@@ -8,8 +8,8 @@ import { Input } from '@/components/ui/input';
 import { AlertError } from '@/components/ui/alert';
 import { Button } from '@/components/ui/button';
 import { Spinner } from '@/components/ui/spinner';
-import { ButtonBack } from '@/components/domains/auth/button-back';
 import { createClient } from '@/supabase/client';
+import Link from 'next/link';
 
 export const FormReset = () => {
   const [pending, startTransition] = useTransition();
@@ -63,7 +63,9 @@ export const FormReset = () => {
           {pending && <Spinner />}
           reset password
         </Button>
-        <ButtonBack href="/auth/login" label="back to login" />
+        <Button variant="link" size="link" asChild>
+          <Link href="/auth/login">back to login</Link>
+        </Button>
       </form>
     </Form>
   );
