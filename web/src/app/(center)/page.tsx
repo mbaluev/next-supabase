@@ -17,13 +17,13 @@ export default function Home() {
           <p>next.js</p>
           <Dot />
           <p>supabase</p>
+          <Dot />
+          <p>d3.js</p>
         </div>
         <div className="flex gap-2 flex-wrap justify-center">
           <p>tailwind</p>
           <Dot />
-          <p>lucide</p>
-          <Dot />
-          <p>d3.js</p>
+          <p>lucide icons</p>
         </div>
       </div>
       <Unauthenticated>
