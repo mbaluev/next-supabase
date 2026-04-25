@@ -6,9 +6,6 @@ type SetCookieOptions = {
   sameSite?: 'Lax' | 'Strict' | 'None';
 };
 
-/**
- * Read a cookie by name in the browser.
- */
 export function getCookie(name: string): string | undefined {
   if (typeof document === 'undefined') return undefined;
   const match = document.cookie.match(
@@ -17,14 +14,8 @@ export function getCookie(name: string): string | undefined {
   return match ? decodeURIComponent(match[1]) : undefined;
 }
 
-/**
- * Set a cookie. Defaults: path=/, max-age=1y, SameSite=Lax. No Secure (works on http://localhost).
- */
-export function setCookie(
-  name: string,
-  value: string,
-  { maxAge = DEFAULT_MAX_AGE, path = '/', sameSite = 'Lax' }: SetCookieOptions = {}
-): void {
+export function setCookie(name: string, value: string, opts?: SetCookieOptions): void {
+  const { maxAge = DEFAULT_MAX_AGE, path = '/', sameSite = 'Lax' }: SetCookieOptions = { ...opts };
   if (typeof document === 'undefined') return;
   const parts = [
     `${encodeURIComponent(name)}=${encodeURIComponent(value)}`,
