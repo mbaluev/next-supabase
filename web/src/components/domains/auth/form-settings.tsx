@@ -16,7 +16,7 @@ import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
 import { Input } from '@/components/ui/input';
 import { Button } from '@/components/ui/button';
 import { Spinner } from '@/components/ui/spinner';
-import { useSupabaseUser } from '@/supabase/auth';
+import { useSupabaseUser } from '@/supabase/auth-client';
 import { createClient } from '@/supabase/client';
 
 interface IProps {

@@ -13,29 +13,16 @@ import {
   ArrowLeftToLine,
 } from 'lucide-react';
 import { TTreeDTO } from '@/utils/tree';
-import { Fragment, ReactNode } from 'react';
+import { Fragment } from 'react';
 import { cn } from '@/utils/cn';
 import { TRouteDTO, IS_PATH, ROUTES } from '@/settings/routes';
-import {
-  SidebarLeft,
-  SidebarLeftButton,
-  SidebarLeftProvider,
-  SidebarLeftResize,
-  useSidebarLeft,
-} from '@/components/layout/sidebar-left';
-import {
-  SidebarRight,
-  SidebarRightButton,
-  SidebarRightProvider,
-  SidebarRightResize,
-  useSidebarRight,
-} from '@/components/layout/sidebar-right';
+import { SidebarLeftButton, useSidebarLeft } from '@/components/layout/sidebar-left';
+import { SidebarRightButton, useSidebarRight } from '@/components/layout/sidebar-right';
 import { Separator } from '@/components/ui/separator';
 import { handleDialogOpen } from '@/components/ui/dialog-handlers';
 import { usePathname, useRouter, useSearchParams } from 'next/navigation';
-import { menuLeft } from '@/settings/menu';
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
-import { Authenticated, useSupabaseUser, useSupabaseAuth } from '@/supabase/auth';
+import { useSupabaseUser, useSupabaseAuth } from '@/supabase/auth-client';
 
 const MENU_PADDING_ITEM = 15;
 const MENU_TRANSITION_DURATION = 100;
@@ -191,25 +178,6 @@ MenuItemRight.displayName = 'MenuItemRight';
 
 // menu-left
 
-interface IMenuProps {
-  children: ReactNode;
-}
-const MenuLeft = (props: IMenuProps) => {
-  const { children } = props;
-  return (
-    <SidebarLeftProvider data={menuLeft} name="menu-left" collapsed>
-      <Authenticated>
-        <SidebarLeft className="z-20 group/sidebar-left">
-          <MenuLeftContent />
-          <SidebarLeftResize className="group-hover/sidebar-left:opacity-100 group-active/sidebar-left:opacity-100" />
-        </SidebarLeft>
-      </Authenticated>
-      {children}
-    </SidebarLeftProvider>
-  );
-};
-MenuLeft.displayName = 'MenuLeft';
-
 const MenuLeftContent = () => {
   const { toggleSidebar, data } = useSidebarLeft();
   return (
@@ -244,11 +212,12 @@ const MenuLeftContent = () => {
 MenuLeftContent.displayName = 'MenuLeftContent';
 
 const MenuUserInfo = () => {
+  const { user, pending } = useSupabaseUser();
+  const { signOut } = useSupabaseAuth();
+
   const searchParams = useSearchParams();
   const pathname = usePathname();
   const router = useRouter();
-  const { user, pending } = useSupabaseUser();
-  const { signOut } = useSupabaseAuth();
 
   const handleLogout = async () => {
     await signOut();
@@ -300,22 +269,6 @@ MenuUserInfo.displayName = 'MenuUserInfo';
 
 // menu-right
 
-const MenuRight = (props: IMenuProps) => {
-  const { children } = props;
-  return (
-    <SidebarRightProvider name="menu-right" collapsed defaultOpen={false}>
-      {children}
-      <Authenticated>
-        <SidebarRight className="z-10 group/sidebar-right">
-          <SidebarRightResize className="group-hover/sidebar-right:opacity-100 group-active/sidebar-right:opacity-100" />
-          <MenuRightContent />
-        </SidebarRight>
-      </Authenticated>
-    </SidebarRightProvider>
-  );
-};
-MenuRight.displayName = 'MenuRight';
-
 const MenuRightContent = () => {
   const { toggleSidebar, data } = useSidebarRight();
   return (
@@ -345,4 +298,4 @@ const MenuRightContent = () => {
 };
 MenuRightContent.displayName = 'MenuRightContent';
 
-export { MenuLeft, MenuRight };
+export { MenuLeftContent, MenuRightContent };

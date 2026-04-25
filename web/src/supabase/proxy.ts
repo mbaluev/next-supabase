@@ -1,4 +1,4 @@
-import { createServerClient, type CookieOptions } from '@supabase/ssr';
+import { createServerClient } from '@supabase/ssr';
 import { NextResponse, type NextRequest } from 'next/server';
 import { SUPABASE_COOKIE_NAME } from '@/supabase/const';
 import { getRequestOrigin } from '@/utils/request-origin';
@@ -23,7 +23,7 @@ function withSupabaseCookies(target: NextResponse, source: NextResponse): NextRe
   return target;
 }
 
-export async function middleware(request: NextRequest) {
+export async function updateSession(request: NextRequest) {
   let supabaseResponse = NextResponse.next({ request });
   const supabase = createServerClient(
     process.env.SUPABASE_URL ?? process.env.NEXT_PUBLIC_SUPABASE_URL!,
@@ -34,19 +34,30 @@ export async function middleware(request: NextRequest) {
         getAll() {
           return request.cookies.getAll();
         },
-        setAll(cookiesToSet: { name: string; value: string; options: CookieOptions }[]) {
+        setAll(cookiesToSet, headers) {
           cookiesToSet.forEach(({ name, value }) => request.cookies.set(name, value));
-          supabaseResponse = NextResponse.next({ request });
+          supabaseResponse = NextResponse.next({
+            request,
+          });
           cookiesToSet.forEach(({ name, value, options }) =>
             supabaseResponse.cookies.set(name, value, options)
+          );
+          Object.entries(headers).forEach(([key, value]) =>
+            supabaseResponse.headers.set(key, value)
           );
         },
       },
     }
   );
 
-  const { data } = await supabase.auth.getUser();
-  const { user } = data;
+  // Do not run code between createServerClient and
+  // supabase.auth.getClaims(). A simple mistake could make it very hard to debug
+  // issues with users being randomly logged out.
+  // IMPORTANT: If you remove getClaims() and you use server-side rendering
+  // with the Supabase client, your users may be randomly logged out.
+
+  const { data } = await supabase.auth.getClaims();
+  const user = data?.claims;
   const pathname = request.nextUrl.pathname;
   const origin = getRequestOrigin(request);
   const isProtected = PROTECTED_PREFIXES.some((p) => matchesPath(pathname, p));
@@ -64,7 +75,3 @@ export async function middleware(request: NextRequest) {
   supabaseResponse.headers.set('Cache-Control', 'private, no-store');
   return supabaseResponse;
 }
-
-export const config = {
-  matcher: ['/((?!_next/static|_next/image|favicon.ico|.*\\.(?:svg|png|jpg|jpeg|gif|webp)$).*)'],
-};

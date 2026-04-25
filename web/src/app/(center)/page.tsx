@@ -2,7 +2,7 @@
 
 import { Dot } from 'lucide-react';
 import { SvgLogo } from '@/components/icons/components/logo';
-import { Unauthenticated } from '@/supabase/auth';
+import { Unauthenticated } from '@/supabase/auth-client';
 import { ButtonLogin } from '@/components/domains/auth/button-login';
 
 export default function Home() {

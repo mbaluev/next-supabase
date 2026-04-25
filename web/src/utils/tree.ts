@@ -10,9 +10,9 @@ export type TTreeState = {
 export type TTreeDTO<T> = {
   id: string;
   pid: string | null;
-  data?: T;
-  items: TTreeDTO<T>[];
   state: TTreeState;
+  items: TTreeDTO<T>[];
+  data?: T;
 };
 
 export const DEFAULT_STATE: TTreeState = {
@@ -24,14 +24,10 @@ export const DEFAULT_STATE: TTreeState = {
 
 export class CTreeNode<T> {
   id: string;
-
   pid: string | null;
-
-  data?: T;
-
   state: TTreeState;
-
   items: CTreeNode<T>[];
+  data?: T;
 
   constructor(id: string, pid: string | null, state: TTreeState, data?: T, items?: CTreeNode<T>[]) {
     this.id = id;
@@ -43,6 +39,12 @@ export class CTreeNode<T> {
 
   get isLeaf() {
     return this.items.length === 0;
+  }
+  get isParent() {
+    return this.state.level === 0;
+  }
+  get isRoot() {
+    return !this.pid;
   }
 }
 
@@ -127,6 +129,8 @@ export class CTree<T> {
     }
   }
 
+  leafs = (x: CTreeNode<T>) => x.isLeaf;
+
   flat() {
     const collection: TTreeDTO<T>[] = [];
     for (const node of this.preOrderTraversal()) {
@@ -136,7 +140,31 @@ export class CTree<T> {
     return collection;
   }
 
-  leafs = (x: CTreeNode<T>) => x.isLeaf;
+  toObject(): TTreeDTO<T> {
+    const toObjectValue = (node: CTreeNode<T>) => {
+      const { id, pid, data, state, items } = node;
+      const object: any = { id, pid, data, state, items: items.map(toObjectValue) };
+      return object;
+    };
+    return toObjectValue(this.root);
+  }
+
+  static toTree<T>(tree?: TTreeDTO<T>): CTree<T> {
+    const insert = (
+      root: CTree<any>,
+      id: string,
+      pid: string | null,
+      state: TTreeState,
+      items?: TTreeDTO<T>[],
+      data?: T
+    ) => {
+      root.insert(id, pid, data, state);
+      items?.forEach((d: TTreeDTO<T>) => insert(root, d.id, d.pid, d.state, d.items, d.data));
+    };
+    const _root = new CTree<any>(tree?.id, tree?.state, tree?.data);
+    tree?.items?.forEach((d: any) => insert(_root, d.id, d.pid, d.state, d.items, d.data));
+    return _root;
+  }
 
   // helpers
 
