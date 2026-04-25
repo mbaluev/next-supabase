@@ -17,9 +17,7 @@ interface SupabaseAuthContext {
   pending: boolean;
   signOut: () => Promise<void>;
 }
-
 const SupabaseAuthContext = createContext<SupabaseAuthContext | null>(null);
-
 const SupabaseAuthProvider = ({ children }: { children: ReactNode }) => {
   const [user, setUser] = useState<User | null>(null);
   const [pending, setPending] = useState(true);
@@ -59,7 +57,6 @@ function useSupabaseUser() {
   if (!ctx) throw new Error('useSupabaseUser must be used within SupabaseAuthProvider');
   return { user: ctx.user, pending: ctx.pending };
 }
-
 function useSupabaseAuth() {
   const ctx = useContext(SupabaseAuthContext);
   if (!ctx) throw new Error('useSupabaseAuth must be used within SupabaseAuthProvider');
@@ -71,7 +68,6 @@ const Authenticated = ({ children }: { children: ReactNode }) => {
   if (pending || !user) return null;
   return <>{children}</>;
 };
-
 const Unauthenticated = ({ children }: { children: ReactNode }) => {
   const { user, pending } = useSupabaseUser();
   if (pending || user) return null;

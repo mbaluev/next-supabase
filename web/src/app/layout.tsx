@@ -1,13 +1,13 @@
 import type { Viewport } from 'next';
 import type { Metadata } from 'next';
 import { JetBrains_Mono } from 'next/font/google';
+import { cookies } from 'next/headers';
 import { ReactNode, Suspense } from 'react';
 import { Check, Info, OctagonX, TriangleAlert } from 'lucide-react';
-import { SupabaseAuthProvider } from '@/supabase/auth';
+import { SupabaseAuthProvider } from '@/supabase/auth-client';
 import { ThemeProvider } from '@/components/layout/theme';
 import { Layout } from '@/components/layout/layout';
 import { Toaster } from '@/components/ui/sonner';
-import { DialogProfile } from '@/components/domains/dialog-profile';
 import { DialogPrivacyPolicy } from '@/components/domains/dialog-privacy-policy';
 import { DialogTermsConditions } from '@/components/domains/dialog-terms-conditions';
 import { Spinner } from '@/components/ui/spinner';
@@ -34,21 +34,34 @@ export const viewport: Viewport = {
 };
 
 export default async function RootLayout({ children }: { children: ReactNode }) {
+  const c = await cookies();
+  const leftOpen = c.get('menu-left')?.value === 'true';
+  const leftWidthRaw = c.get('menu-left_width')?.value;
+  const leftWidth = Number.isFinite(Number(leftWidthRaw)) ? Number(leftWidthRaw) : undefined;
+  const rightOpen = c.get('menu-right')?.value === 'true';
+  const rightWidthRaw = c.get('menu-right_width')?.value;
+  const rightWidth = Number.isFinite(Number(rightWidthRaw)) ? Number(rightWidthRaw) : undefined;
   return (
     <html lang="en" suppressHydrationWarning>
       <body className={font.className}>
         <SupabaseAuthProvider>
           <ThemeProvider attribute="class" defaultTheme="system" enableSystem>
             <Suspense>
-              <Layout>{children}</Layout>
-              <DialogProfile />
+              <Layout
+                leftOpen={leftOpen}
+                leftWidth={leftWidth}
+                rightOpen={rightOpen}
+                rightWidth={rightWidth}
+              >
+                {children}
+              </Layout>
               <DialogPrivacyPolicy />
               <DialogTermsConditions />
             </Suspense>
             <Toaster
               visibleToasts={5}
               position="bottom-right"
-              className={font.className}
+              style={{ fontFamily: font.style.fontFamily }}
               toastOptions={{
                 unstyled: true,
                 classNames: {

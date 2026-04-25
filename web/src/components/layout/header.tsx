@@ -10,7 +10,7 @@ import { usePathname } from 'next/navigation';
 import { BREAD_CRUMBS } from '@/settings/bread-crumbs';
 import { BreadCrumbs } from '@/components/layout/bread-crumbs';
 import { useCallback, useEffect } from 'react';
-import { Authenticated } from '@/supabase/auth';
+import { Authenticated } from '@/supabase/auth-client';
 
 const THEME_KEYBOARD_SHORTCUT = 't';
 
@@ -48,7 +48,6 @@ const HeaderRight = () => {
   return (
     <nav className="grow-0 flex gap-4">
       <HeaderThemeBtn />
-      {/*<HeaderUserBtn />*/}
       <Authenticated>
         <SidebarRightTrigger />
       </Authenticated>

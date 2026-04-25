@@ -15,6 +15,7 @@ import React, {
   useState,
 } from 'react';
 import { cn } from '@/utils/cn';
+import { setCookie } from '@/utils/cookie';
 import { MEDIA_MD, useMatchMedia } from '@/hooks/use-match-media';
 import { Button } from '@/components/ui/button';
 import { ArrowLeftToLine, ArrowRightFromLine } from 'lucide-react';
@@ -53,42 +54,40 @@ function useSidebarLeft() {
 }
 
 type SidebarLeftProviderBaseProps = {
-  data?: CTree<TRouteDTO>;
+  data?: TTreeDTO<TRouteDTO>;
   name?: string;
   open?: boolean;
   onOpenChange?: (open: boolean) => void;
   defaultOpen?: boolean;
+  defaultWidth?: number;
   collapsed?: boolean;
 };
 type SidebarLeftProviderProps = ComponentProps<'div'> & SidebarLeftProviderBaseProps;
 const SidebarLeftProvider = forwardRef<HTMLDivElement, SidebarLeftProviderProps>((props, ref) => {
-  const { name = SIDEBAR_STORAGE_NAME, defaultOpen: __defaultOpen } = props;
-  let _defaultOpen: string | null =
-    typeof window !== 'undefined' ? localStorage.getItem(name) : null;
-  const _parsedOpen = _defaultOpen != null ? _defaultOpen === 'true' : __defaultOpen;
-
   const {
     data: initData,
     name: _name,
     open: openProp,
     onOpenChange: setOpenProp,
     defaultOpen,
+    defaultWidth,
     collapsed,
     className,
     children,
     ..._props
   } = props;
+  const { name = SIDEBAR_STORAGE_NAME } = props;
   const isMobile = useMatchMedia(MEDIA_MD);
   const [openMobile, setOpenMobile] = useState(false);
   const pathname = usePathname();
 
   // internal state of the sidebar.
-  const [_open, _setOpen] = useState<boolean>(_parsedOpen ?? defaultOpen ?? false);
+  const [_open, _setOpen] = useState<boolean>(openProp ?? defaultOpen ?? false);
   const open = openProp ?? _open;
   const setOpenCallback = (value: boolean | ((value: boolean) => boolean)) => {
     const res = typeof value === 'function' ? value(open) : value;
     if (setOpenProp) return setOpenProp?.(res);
-    localStorage.setItem(name, String(res));
+    setCookie(name, String(res));
     _setOpen(res);
   };
   const setOpen = useCallback(setOpenCallback, [setOpenProp, open, name]);
@@ -116,7 +115,7 @@ const SidebarLeftProvider = forwardRef<HTMLDivElement, SidebarLeftProviderProps>
   }, [toggleSidebar]);
 
   // init data
-  const [data, setData] = useState<CTree<TRouteDTO>>(initData ?? new CTree());
+  const [data, setData] = useState<CTree<TRouteDTO>>(CTree.toTree(initData));
   const toggleNodeCallback = (node: TTreeDTO<TRouteDTO>) => {
     const _data = data.clone();
     _data.toggle(node.id);
@@ -142,10 +141,7 @@ const SidebarLeftProvider = forwardRef<HTMLDivElement, SidebarLeftProviderProps>
 
   // resizing
   const SIDEBAR_RESIZE_NAME = `${name}_width`;
-  const _storedWidth =
-    typeof window !== 'undefined' ? localStorage.getItem(SIDEBAR_RESIZE_NAME) : null;
-  const _defaultWidth = _storedWidth ? Number(_storedWidth) : SIDEBAR_WIDTH_MIN;
-  const [width, setWidth] = useState(_defaultWidth);
+  const [width, setWidth] = useState<number>(defaultWidth ?? SIDEBAR_WIDTH_MIN);
   const [resizing, setResizing] = useState(false);
   const isResizingRef = useRef(false);
   const handleResize = (e: React.MouseEvent<HTMLDivElement, MouseEvent>) => {
@@ -166,7 +162,7 @@ const SidebarLeftProvider = forwardRef<HTMLDivElement, SidebarLeftProviderProps>
     if (newWidth < SIDEBAR_WIDTH_MIN) newWidth = SIDEBAR_WIDTH_MIN;
     if (newWidth > SIDEBAR_WIDTH_MAX) newWidth = SIDEBAR_WIDTH_MAX;
     setWidth(newWidth);
-    localStorage.setItem(SIDEBAR_RESIZE_NAME, String(newWidth));
+    setCookie(SIDEBAR_RESIZE_NAME, String(newWidth));
   };
   const handleMouseUp = () => {
     isResizingRef.current = false;

@@ -11,7 +11,8 @@ const DebugPage = () => {
       <div
         className={cn(
           'w-full grid gap-4 items-start',
-          'grid-cols-1 @lg/debug:grid-cols-2 @4xl/debug:grid-cols-3 @8xl/debug:grid-cols-4'
+          'grid-cols-1',
+          '@lg/debug:grid-cols-2 @4xl/debug:grid-cols-3 @8xl/debug:grid-cols-4'
         )}
       >
         <WidgetAlerts />

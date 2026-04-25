@@ -9,12 +9,12 @@ import { InputPassword } from '@/components/ui/input-password';
 import { AlertError } from '@/components/ui/alert';
 import { Button } from '@/components/ui/button';
 import { Spinner } from '@/components/ui/spinner';
-import { ButtonBack } from '@/components/domains/auth/button-back';
+import { createClient } from '@/supabase/client';
+import Link from 'next/link';
 
 export const FormRegister = () => {
   const [pending, startTransition] = useTransition();
   const [error, setError] = useState<string | undefined>();
-
   const form = useForm({
     defaultValues: {
       name: '',
@@ -22,15 +22,25 @@ export const FormRegister = () => {
       password: '',
     },
   });
-  const handleSuccess = async () => {
-    form.reset();
-    toast.success('check you email');
+
+  const handleRegister = async (values: { name: string; email: string; password: string }) => {
+    setError(undefined);
+    startTransition(async () => {
+      const supabase = createClient();
+      const { error: signUpError } = await supabase.auth.signUp({
+        email: values.email.trim(),
+        password: values.password,
+        options: { data: { full_name: values.name.trim() } },
+      });
+      if (signUpError) {
+        setError(signUpError.message);
+        toast.error(signUpError.message);
+        return;
+      }
+      form.reset();
+      toast.success('check your email for a confirmation link');
+    });
   };
-  const handleError = async (error: any) => {
-    console.log('-->', error);
-    toast.error(String(error));
-  };
-  const handleRegister = async (values: any) => {};
 
   return (
     <Form {...form}>
@@ -46,7 +56,7 @@ export const FormRegister = () => {
                     {...field}
                     disabled={pending}
                     placeholder="enter full name"
-                    autoComplete="new-password"
+                    autoComplete="name"
                   />
                 </FormControl>
                 <FormMessage />
@@ -64,7 +74,7 @@ export const FormRegister = () => {
                     disabled={pending}
                     placeholder="enter email"
                     type="email"
-                    autoComplete="new-password"
+                    autoComplete="email"
                   />
                 </FormControl>
                 <FormMessage />
@@ -94,7 +104,9 @@ export const FormRegister = () => {
           {pending && <Spinner />}
           create an account
         </Button>
-        <ButtonBack href="/auth/login" label="already have an account?" />
+        <Button variant="link" size="link" className="w-full" asChild>
+          <Link href="/auth/login">already have an account?</Link>
+        </Button>
       </form>
     </Form>
   );

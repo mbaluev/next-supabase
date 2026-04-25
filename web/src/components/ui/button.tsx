@@ -40,6 +40,7 @@ const buttonVariants = cva(
         'icon-lg': 'h-14 w-14 rounded-full',
         'icon-xl': 'h-14 w-14 rounded-full text-2xl',
         adornment: 'h-8 w-8 p-1.5 absolute right-1.5 top-1/2 -translate-y-1/2 rounded-full',
+        link: 'p-0 h-auto',
       },
     },
     defaultVariants: {
