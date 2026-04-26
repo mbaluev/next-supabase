@@ -62,6 +62,7 @@ export const FormRegister = () => {
                 <FormMessage />
               </FormItem>
             )}
+            rules={{ required: true }}
           />
           <FormField
             control={form.control}
@@ -80,6 +81,7 @@ export const FormRegister = () => {
                 <FormMessage />
               </FormItem>
             )}
+            rules={{ required: true }}
           />
           <FormField
             control={form.control}
@@ -97,6 +99,7 @@ export const FormRegister = () => {
                 <FormMessage />
               </FormItem>
             )}
+            rules={{ required: true }}
           />
         </div>
         <AlertError message={error} />

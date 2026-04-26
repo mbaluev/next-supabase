@@ -27,12 +27,9 @@ export default function Home() {
         </div>
       </div>
       <Unauthenticated>
-        <div className="grid grid-cols-1 gap-6">
+        <div className="grid grid-cols-1">
           <ButtonLogin variant="default" mode="redirect">
             sign in
-          </ButtonLogin>
-          <ButtonLogin variant="outline" mode="modal">
-            sign in dialog
           </ButtonLogin>
         </div>
       </Unauthenticated>
