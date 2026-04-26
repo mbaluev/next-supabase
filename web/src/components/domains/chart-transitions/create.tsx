@@ -1,6 +1,6 @@
 import * as d3 from 'd3';
 import moment from 'moment/moment';
-import { MutableRefObject } from 'react';
+import { RefObject } from 'react';
 import { JetBrains_Mono } from 'next/font/google';
 import {
   EChartTransitionsType,
@@ -15,7 +15,7 @@ import {
 const font = JetBrains_Mono({ subsets: ['latin'] });
 
 export const ChartTransitionsCreate = (
-  ref: MutableRefObject<any>,
+  ref: RefObject<any>,
   id: string,
   data: IChartTransitionsItem[],
   legend: IChartTransitionsLegend[],
