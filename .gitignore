@@ -40,3 +40,6 @@ next-env.d.ts
 # supabase – persistent data (never commit)
 volumes/db/data/
 volumes/storage/
+
+# agents
+skills-lock.json

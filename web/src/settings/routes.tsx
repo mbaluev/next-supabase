@@ -32,9 +32,8 @@ const ROUTES: Record<string, TRouteDTO> = {
   PROFILE: {
     name: 'profile',
     label: 'profile',
-    path: EMPTY_PATH,
+    path: '/profile',
     icon: <UserRoundCog />,
-    dialog: true,
   },
   PRIVACY_POLICY: {
     name: 'privacy-policy',
@@ -55,12 +54,6 @@ const ROUTES: Record<string, TRouteDTO> = {
     label: 'dashboard',
     path: '/dashboard',
     icon: <LayoutDashboard />,
-  },
-  FILES: {
-    name: 'files',
-    label: 'files',
-    path: '/files',
-    icon: <FolderClosed />,
   },
   PARTNERS: {
     name: 'partners',

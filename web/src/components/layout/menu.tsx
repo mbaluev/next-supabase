@@ -11,6 +11,7 @@ import {
   ArrowRightToLine,
   SlidersHorizontal,
   ArrowLeftToLine,
+  Trash,
 } from 'lucide-react';
 import { TTreeDTO } from '@/utils/tree';
 import { Fragment } from 'react';
@@ -194,16 +195,23 @@ const MenuLeftContent = () => {
         </Button>
       </div>
       <Separator />
-      <div className="flex flex-col overflow-y-auto">
+      <div className="flex flex-col flex-1 overflow-y-auto">
         <MenuUserInfo />
         <Separator />
-        <div className="p-4 flex flex-col space-y-2">
+        <div className="p-4 flex flex-col flex-1 space-y-2">
           {data
             ?.flat()
             ?.filter((d) => !d.state.hidden)
             .map((node, index) => (
               <MenuItemLeft key={index} node={node} />
             ))}
+        </div>
+        <Separator />
+        <div className="p-4 flex flex-col space-y-2">
+          <SidebarLeftButton variant="ghost-destructive" disabled>
+            <Trash />
+            Delete account
+          </SidebarLeftButton>
         </div>
       </div>
     </div>
@@ -215,7 +223,6 @@ const MenuUserInfo = () => {
   const { user, pending } = useSupabaseUser();
   const { signOut } = useSupabaseAuth();
   const router = useRouter();
-
   const handleLogout = async () => {
     await signOut();
     router.push('/');
@@ -225,25 +232,29 @@ const MenuUserInfo = () => {
   if (pending) return null;
   if (!user) return null;
 
-  const avatarUrl = user.user_metadata?.avatar_url ?? '';
-  const displayName = user.user_metadata?.full_name ?? '-';
-
   return (
     <div className="p-4 flex flex-col space-y-4">
       <div className="flex space-x-4 items-center">
         <Avatar className="w-20 h-20 bg-secondary rounded-md">
-          <AvatarImage src={avatarUrl} />
+          <AvatarImage src={user.user_metadata?.avatar_url} />
           <AvatarFallback className="bg-secondary">
             <User className="text-xl" />
           </AvatarFallback>
         </Avatar>
         <div className="space-y-2 overflow-hidden flex-1">
           <p className="overflow-hidden text-ellipsis">{user.email ?? '-'}</p>
-          <p className="overflow-hidden text-ellipsis">{displayName}</p>
+          <p className="overflow-hidden text-ellipsis">{user.user_metadata?.full_name ?? '-'}</p>
         </div>
       </div>
       <div className="flex flex-col space-y-2 ">
-        <SidebarLeftButton variant="ghost" onClick={handleLogout}>
+        <SidebarLeftButton variant="ghost" asChild>
+          <Link href={ROUTES.PROFILE.path}>
+            {ROUTES.PROFILE.icon}
+            <p className="flex-1 text-left">{ROUTES.PROFILE.label}</p>
+            {ROUTES.PROFILE.dialog && <BookOpen />}
+          </Link>
+        </SidebarLeftButton>
+        <SidebarLeftButton variant="ghost-destructive" onClick={handleLogout}>
           <LogOut />
           logout
         </SidebarLeftButton>
