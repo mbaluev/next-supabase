@@ -3,7 +3,7 @@
 import * as React from 'react';
 import * as TooltipPrimitive from '@radix-ui/react-tooltip';
 import { cn } from '@/utils/cn';
-import { TooltipArrow } from '@radix-ui/react-tooltip';
+import { TooltipArrow, TooltipPortal } from '@radix-ui/react-tooltip';
 
 const TooltipProvider = TooltipPrimitive.Provider;
 
@@ -34,10 +34,12 @@ const TooltipText = React.forwardRef<
   <TooltipProvider disableHoverableContent>
     <Tooltip delayDuration={100}>
       <TooltipTrigger asChild>{children}</TooltipTrigger>
-      <TooltipContent ref={ref} {...props}>
-        {title}
-        <TooltipArrow className="fill-foreground w-2.5 h-1.5" />
-      </TooltipContent>
+      <TooltipPortal>
+        <TooltipContent ref={ref} {...props}>
+          {title}
+          <TooltipArrow className="fill-foreground w-2.5 h-1.5" />
+        </TooltipContent>
+      </TooltipPortal>
     </Tooltip>
   </TooltipProvider>
 ));

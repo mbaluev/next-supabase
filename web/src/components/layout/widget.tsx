@@ -32,7 +32,7 @@ Widget.displayName = 'Widget';
 const widgetHeaderVariants = cva('flex grow-0 flex-wrap gap-2 justify-between', {
   variants: {
     variant: {
-      default: 'py-4',
+      default: 'p-4 bg-background rounded-t-lg',
       padding: 'p-4',
       background: 'p-4 bg-sidebar rounded-t-lg',
     },

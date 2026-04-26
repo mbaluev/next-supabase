@@ -6,13 +6,12 @@ import {
   ChartColumn,
   ChartColumnStacked,
   ChartSpline,
-  LayoutDashboard,
+  Activity,
   RefreshCw,
 } from 'lucide-react';
-import { useRouter, useSearchParams } from 'next/navigation';
+import { usePathname, useRouter, useSearchParams } from 'next/navigation';
 import { useResizeObserver } from '@/hooks/use-resize-observer';
 import { v4 } from 'uuid';
-import { ROUTES } from '@/settings/routes';
 import { useQueryString } from '@/hooks/use-query-string';
 import {
   Widget,
@@ -53,6 +52,7 @@ export const ChartTransitions = (props: IChartTransitionsProps) => {
   const [chart, setChart] = useState<any>(null);
   const router = useRouter();
   const params = useSearchParams();
+  const pathname = usePathname();
   const typeName = name ?? 'type';
   const type = params.get(typeName) ?? DEFAULT_CHART_TRANSITIONS_TYPE;
   const id = useMemo(() => `widget-chart-${v4()}`, []);
@@ -71,13 +71,11 @@ export const ChartTransitions = (props: IChartTransitionsProps) => {
   const { addParam, removeParam } = useQueryString(searchParams);
   const handleChange = (type: EChartTransitionsType) => {
     const queryString = addParam(typeName, type);
-    const path = ROUTES.DASHBOARD.path;
-    router.push(`${path}?${queryString}`);
+    router.push(`${pathname}?${queryString}`);
   };
   const handleReset = () => {
     const queryString = removeParam(typeName);
-    const path = ROUTES.DASHBOARD.path;
-    router.push(`${path}?${queryString}`);
+    router.push(`${pathname}?${queryString}`);
   };
 
   // create
@@ -93,12 +91,12 @@ export const ChartTransitions = (props: IChartTransitionsProps) => {
     if (ref.current && width > 0 && height > 0 && start) {
       chart?.remove();
       setChart(null);
-      // ref.current.replaceChildren();
+      ref.current.replaceChildren();
     }
     if (ref.current && data && width > 0 && height > 0 && !start) {
       create();
     }
-  }, [ref, start, width, height, data]);
+  }, [start, width, height, data]);
   // update
   useEffect(() => {
     if (ref.current && chart) {
@@ -108,16 +106,16 @@ export const ChartTransitions = (props: IChartTransitionsProps) => {
 
   return (
     <Widget variant="background" {...props}>
-      <WidgetHeader variant="padding">
+      <WidgetHeader variant="padding" separator>
         <WidgetIcon>
-          <LayoutDashboard />
+          <Activity />
         </WidgetIcon>
-        <WidgetTitle>transitions</WidgetTitle>
+        <WidgetTitle>activity</WidgetTitle>
         <WidgetButtons>
           <TooltipText title="stacked bar chart" side="top">
             <Button
               variant={
-                !type || type === EChartTransitionsType.stackedBarChart ? 'default' : 'ghost'
+                !type || type === EChartTransitionsType.stackedBarChart ? 'ghost-primary' : 'ghost'
               }
               size="icon"
               onClick={() => handleChange(EChartTransitionsType.stackedBarChart)}
@@ -127,7 +125,7 @@ export const ChartTransitions = (props: IChartTransitionsProps) => {
           </TooltipText>
           <TooltipText title="grouped bar chart" side="top">
             <Button
-              variant={type === EChartTransitionsType.groupedBarChart ? 'default' : 'ghost'}
+              variant={type === EChartTransitionsType.groupedBarChart ? 'ghost-primary' : 'ghost'}
               size="icon"
               onClick={() => handleChange(EChartTransitionsType.groupedBarChart)}
             >
@@ -136,7 +134,7 @@ export const ChartTransitions = (props: IChartTransitionsProps) => {
           </TooltipText>
           <TooltipText title="area chart" side="top">
             <Button
-              variant={type === EChartTransitionsType.areaChart ? 'default' : 'ghost'}
+              variant={type === EChartTransitionsType.areaChart ? 'ghost-primary' : 'ghost'}
               size="icon"
               onClick={() => handleChange(EChartTransitionsType.areaChart)}
             >
@@ -145,7 +143,7 @@ export const ChartTransitions = (props: IChartTransitionsProps) => {
           </TooltipText>
           <TooltipText title="stacked area chart" side="top">
             <Button
-              variant={type === EChartTransitionsType.stackedAreaChart ? 'default' : 'ghost'}
+              variant={type === EChartTransitionsType.stackedAreaChart ? 'ghost-primary' : 'ghost'}
               size="icon"
               onClick={() => handleChange(EChartTransitionsType.stackedAreaChart)}
             >
@@ -157,7 +155,7 @@ export const ChartTransitions = (props: IChartTransitionsProps) => {
           </Button>
         </WidgetButtons>
       </WidgetHeader>
-      <WidgetContent variant="padding">
+      <WidgetContent variant="padding" className="overflow-hidden">
         <div ref={ref} className="w-full h-full relative">
           {loading && (
             <div className="absolute top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2">
