@@ -7,7 +7,7 @@ const widgetVariants = cva('flex flex-col flex-grow max-h-full rounded-lg', {
   variants: {
     variant: {
       default: '',
-      border: 'border shadow-sm',
+      border: 'border-2',
       background: 'bg-sidebar text-sidebar-foreground',
     },
   },
@@ -32,7 +32,7 @@ Widget.displayName = 'Widget';
 const widgetHeaderVariants = cva('flex grow-0 flex-wrap gap-2 justify-between', {
   variants: {
     variant: {
-      default: '',
+      default: 'p-4 bg-background rounded-t-lg',
       padding: 'p-4',
       background: 'p-4 bg-sidebar rounded-t-lg',
     },

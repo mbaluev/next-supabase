@@ -1,5 +1,6 @@
 import { ComponentProps } from 'react';
 import { cn } from '@/utils/cn';
+import { Separator } from '@/components/ui/separator';
 
 type MasterProps = ComponentProps<'div'>;
 const MasterDefault = (props: MasterProps) => {
@@ -20,5 +21,15 @@ const MasterCenter = (props: MasterProps) => {
     </section>
   );
 };
+const MasterSeparator = (props: MasterProps) => {
+  const { children, className, ..._props } = props;
+  const _className = 'flex flex-col flex-1 items-start';
+  return (
+    <section className={cn(_className, className)} {..._props}>
+      <Separator />
+      {children}
+    </section>
+  );
+};
 
-export { MasterDefault, MasterCenter };
+export { MasterDefault, MasterCenter, MasterSeparator };
