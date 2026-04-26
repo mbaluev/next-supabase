@@ -24,10 +24,10 @@ export const WidgetProfile = (props: WidgetProps) => {
       </WidgetHeader>
       <WidgetContent variant="padding">
         <div className="flex gap-6 p-2">
-          <Avatar className="w-50 h-50 bg-sidebar rounded-md border-2">
+          <Avatar className="w-50 h-50 bg-sidebar">
             <AvatarImage src={user?.user_metadata.avatar_url} />
-            <AvatarFallback className="bg-sidebar">
-              <Camera className="text-3xl text-muted-foreground" />
+            <AvatarFallback>
+              <Camera className="text-4xl" />
             </AvatarFallback>
           </Avatar>
           <div className="flex flex-col gap-2">

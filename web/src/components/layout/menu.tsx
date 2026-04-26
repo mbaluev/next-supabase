@@ -7,7 +7,7 @@ import {
   ChevronRight,
   BookOpen,
   LogOut,
-  User,
+  Camera,
   ArrowRightToLine,
   SlidersHorizontal,
   ArrowLeftToLine,
@@ -235,10 +235,10 @@ const MenuUserInfo = () => {
   return (
     <div className="p-4 flex flex-col space-y-4">
       <div className="flex space-x-4 items-center">
-        <Avatar className="w-20 h-20 bg-secondary rounded-md">
+        <Avatar className="w-20 h-20">
           <AvatarImage src={user.user_metadata?.avatar_url} />
-          <AvatarFallback className="bg-secondary">
-            <User className="text-xl" />
+          <AvatarFallback>
+            <Camera className="text-2xl" />
           </AvatarFallback>
         </Avatar>
         <div className="space-y-2 overflow-hidden flex-1">

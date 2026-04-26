@@ -287,7 +287,7 @@ const SidebarRight = forwardRef<HTMLDivElement, SidebarRightProps>((props, ref) 
     isMobile ? classDivMobile : classDivDesktop
   );
 
-  const classBackdrop = cn('fixed top-0 left-0 w-full h-full z-[9] bg-black/25');
+  const classBackdrop = cn('fixed top-0 left-0 w-full h-full z-9 bg-black/25');
 
   return (
     <Fragment>
