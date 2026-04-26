@@ -15,7 +15,7 @@ import { Award, Camera } from 'lucide-react';
 export const WidgetProfile = (props: WidgetProps) => {
   const { user } = useSupabaseUser();
   return (
-    <Widget variant="background" {...props}>
+    <Widget variant="default" {...props}>
       <WidgetHeader variant="padding" separator>
         <WidgetIcon>
           <Award />
