@@ -224,9 +224,6 @@ const MenuUserInfo = () => {
   const { user, pending } = useSupabaseUser();
   const { signOut } = useSupabaseAuth();
   const router = useRouter();
-  const pathname = usePathname();
-  const profile_selected = pathname === ROUTES.PROFILE.path;
-
   const handleLogout = async () => {
     await signOut();
     router.push('/');
@@ -251,12 +248,11 @@ const MenuUserInfo = () => {
         </div>
       </div>
       <div className="flex flex-col space-y-2 ">
-        <SidebarLeftButton variant={profile_selected ? 'ghost-primary' : 'ghost'} asChild>
+        <SidebarLeftButton variant="ghost" asChild>
           <Link href={ROUTES.PROFILE.path}>
             {ROUTES.PROFILE.icon}
             <p className="flex-1 text-left">{ROUTES.PROFILE.label}</p>
             {ROUTES.PROFILE.dialog && <BookOpen />}
-            {/*{profile_selected && <MoveLeft className="text-primary" />}*/}
           </Link>
         </SidebarLeftButton>
         <SidebarLeftButton variant="ghost-destructive" onClick={handleLogout}>
