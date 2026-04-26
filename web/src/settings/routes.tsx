@@ -2,7 +2,6 @@ import { ReactNode } from 'react';
 import {
   CircleOff,
   Code,
-  FolderClosed,
   LayoutDashboard,
   ReceiptText,
   ShieldCheck,
