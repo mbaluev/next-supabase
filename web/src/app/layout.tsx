@@ -11,8 +11,6 @@ import { Toaster } from '@/components/ui/sonner';
 import { DialogPrivacyPolicy } from '@/components/domains/profile/dialog-privacy-policy';
 import { DialogTermsConditions } from '@/components/domains/profile/dialog-terms-conditions';
 import { Spinner } from '@/components/ui/spinner';
-import { SIDEBAR_RIGHT_DEFAULT } from '@/components/layout/sidebar-right';
-import { SIDEBAR_LEFT_DEFAULT } from '@/components/layout/sidebar-left';
 import './globals.css';
 
 const font = JetBrains_Mono({ subsets: ['latin'] });
@@ -39,14 +37,10 @@ export default async function RootLayout({ children }: { children: ReactNode }) 
   const c = await cookies();
   const leftOpen = c.get('menu-left')?.value === 'true';
   const leftWidthRaw = c.get('menu-left_width')?.value;
-  const leftWidth = Number.isFinite(Number(leftWidthRaw))
-    ? Number(leftWidthRaw)
-    : SIDEBAR_LEFT_DEFAULT;
+  const leftWidth = Number.isFinite(Number(leftWidthRaw)) ? Number(leftWidthRaw) : undefined;
   const rightOpen = c.get('menu-right')?.value === 'true';
   const rightWidthRaw = c.get('menu-right_width')?.value;
-  const rightWidth = Number.isFinite(Number(rightWidthRaw))
-    ? Number(rightWidthRaw)
-    : SIDEBAR_RIGHT_DEFAULT;
+  const rightWidth = Number.isFinite(Number(rightWidthRaw)) ? Number(rightWidthRaw) : undefined;
   return (
     <html lang="en" suppressHydrationWarning>
       <body className={font.className}>

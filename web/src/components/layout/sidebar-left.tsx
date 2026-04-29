@@ -30,7 +30,6 @@ const SIDEBAR_EVENT_START = 'sidebar-left-start';
 const SIDEBAR_EVENT_END = 'sidebar-left-end';
 const SIDEBAR_WIDTH_MIN = 260;
 const SIDEBAR_WIDTH_MAX = 480;
-const SIDEBAR_LEFT_DEFAULT = 260;
 
 interface SidebarLeftContext<T> {
   name?: string;
@@ -336,5 +335,4 @@ export {
   useSidebarLeft,
   SIDEBAR_EVENT_START,
   SIDEBAR_EVENT_END,
-  SIDEBAR_LEFT_DEFAULT,
 };
