@@ -259,4 +259,10 @@ export class CTree<T> {
       }
     }
   }
+
+  check(key: string, value: boolean) {
+    this.deselect();
+    const root = this.get(key);
+    if (root) root.state.selected = value;
+  }
 }

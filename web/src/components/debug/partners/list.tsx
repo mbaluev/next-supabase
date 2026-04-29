@@ -1,7 +1,7 @@
 'use client';
 
 import { mockArray } from '@/utils/mock';
-import { mockPartner } from '@/components/domains/partners/mock';
+import { mockPartner } from '@/components/debug/partners/mock';
 import { VirtualizeWindow } from '@/components/layout/virtualize';
 
 export const PartnersList = () => {

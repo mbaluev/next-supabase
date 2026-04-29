@@ -32,6 +32,7 @@ const SIDEBAR_EVENT_START = 'sidebar-right-start';
 const SIDEBAR_EVENT_END = 'sidebar-right-end';
 const SIDEBAR_WIDTH_MIN = 260;
 const SIDEBAR_WIDTH_MAX = 480;
+const SIDEBAR_RIGHT_DEFAULT = 260;
 
 interface SidebarRightContext<T> {
   name?: string;
@@ -334,4 +335,5 @@ export {
   useSidebarRight,
   SIDEBAR_EVENT_START,
   SIDEBAR_EVENT_END,
+  SIDEBAR_RIGHT_DEFAULT,
 };

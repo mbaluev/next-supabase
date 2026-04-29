@@ -30,6 +30,7 @@ const SIDEBAR_EVENT_START = 'sidebar-left-start';
 const SIDEBAR_EVENT_END = 'sidebar-left-end';
 const SIDEBAR_WIDTH_MIN = 260;
 const SIDEBAR_WIDTH_MAX = 480;
+const SIDEBAR_LEFT_DEFAULT = 260;
 
 interface SidebarLeftContext<T> {
   name?: string;
@@ -130,8 +131,14 @@ const SidebarLeftProvider = forwardRef<HTMLDivElement, SidebarLeftProviderProps>
   useEffect(() => {
     const _data = data.clone();
     const node = _data.find((d) => d.data?.path === pathname);
-    if (node) _data.select(node.id, true);
-    else _data.deselect();
+    _data.deselect();
+    _data.collapseTo(1);
+    if (node?.items && node.items.length > 0) {
+      _data.expand(node.id);
+      _data.check(node.id, true);
+    } else if (node) {
+      _data.select(node.id, true);
+    }
     setData(_data);
   }, [pathname]);
 
@@ -329,4 +336,5 @@ export {
   useSidebarLeft,
   SIDEBAR_EVENT_START,
   SIDEBAR_EVENT_END,
+  SIDEBAR_LEFT_DEFAULT,
 };

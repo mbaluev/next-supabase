@@ -1,7 +1,7 @@
 'use client';
 
-import { BriefcaseBusiness } from 'lucide-react';
-import { PartnersList } from '@/components/domains/partners/list';
+import { PartnersList } from '@/components/debug/partners/list';
+import { ROUTES } from '@/settings/routes';
 import {
   Widget,
   WidgetContent,
@@ -15,10 +15,8 @@ export const WidgetPartners = (props: WidgetProps) => {
   return (
     <Widget variant="background" {...props}>
       <WidgetHeader variant="background" separator>
-        <WidgetIcon>
-          <BriefcaseBusiness />
-        </WidgetIcon>
-        <WidgetTitle>partners</WidgetTitle>
+        <WidgetIcon>{ROUTES.DEBUG_LIST_STATIC.icon}</WidgetIcon>
+        <WidgetTitle>{ROUTES.DEBUG_LIST_STATIC.label}</WidgetTitle>
       </WidgetHeader>
       <WidgetContent variant="padding">
         <PartnersList />

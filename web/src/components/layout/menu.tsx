@@ -7,11 +7,12 @@ import {
   ChevronRight,
   BookOpen,
   LogOut,
-  Camera,
   ArrowRightToLine,
   SlidersHorizontal,
   ArrowLeftToLine,
   Trash,
+  ReceiptText,
+  ScanFace,
 } from 'lucide-react';
 import { TTreeDTO } from '@/utils/tree';
 import { Fragment } from 'react';
@@ -24,6 +25,8 @@ import { handleDialogOpen } from '@/components/ui/dialog-handlers';
 import { usePathname, useRouter, useSearchParams } from 'next/navigation';
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
 import { useSupabaseUser, useSupabaseAuth } from '@/supabase/auth-client';
+import { ErrorBlock } from '@/components/layout/error-block';
+import { MasterCenter } from '@/components/layout/master';
 
 const MENU_PADDING_ITEM = 15;
 const MENU_TRANSITION_DURATION = 100;
@@ -199,7 +202,7 @@ const MenuLeftContent = () => {
       <div className="flex flex-col flex-1 overflow-y-auto">
         <MenuUserInfo />
         <Separator />
-        <div className="p-4 flex flex-col flex-1 space-y-2">
+        <div className="p-4 flex flex-col flex-1 gap-2">
           {data
             ?.flat()
             ?.filter((d) => !d.state.hidden)
@@ -239,12 +242,12 @@ const MenuUserInfo = () => {
         <Avatar className="w-20 h-20">
           <AvatarImage src={user.user_metadata?.avatar_url} />
           <AvatarFallback>
-            <Camera className="text-2xl" />
+            <ScanFace className="text-3xl" />
           </AvatarFallback>
         </Avatar>
         <div className="space-y-2 overflow-hidden flex-1">
-          <p className="overflow-hidden text-ellipsis">{user.email ?? '-'}</p>
-          <p className="overflow-hidden text-ellipsis">{user.user_metadata?.full_name ?? '-'}</p>
+          <p className="truncate">{user.email ?? '-'}</p>
+          <p className="truncate">{user.user_metadata?.full_name ?? '-'}</p>
         </div>
       </div>
       <div className="flex flex-col space-y-2 ">
@@ -255,7 +258,7 @@ const MenuUserInfo = () => {
             {ROUTES.PROFILE.dialog && <BookOpen />}
           </Link>
         </SidebarLeftButton>
-        <SidebarLeftButton variant="ghost-destructive" onClick={handleLogout}>
+        <SidebarLeftButton variant="ghost" onClick={handleLogout}>
           <LogOut />
           logout
         </SidebarLeftButton>
@@ -281,15 +284,29 @@ const MenuRightContent = () => {
         </Button>
       </div>
       <Separator />
-      <div className="flex flex-col overflow-y-auto">
-        <div className="p-4 flex flex-col space-y-2">
-          {data
-            ?.flat()
-            ?.filter((d) => !d.state.hidden)
-            .map((node, index) => (
-              <MenuItemRight key={index} node={node} />
-            ))}
-        </div>
+      <div className="flex flex-col flex-1 overflow-y-auto">
+        <MasterCenter>
+          <ErrorBlock
+            icon={<ReceiptText strokeWidth={1.5} className="text-muted-foreground" />}
+            code="details"
+            name="details about selected objects will be displayed here"
+            button={
+              <Button variant="link" size="link" onClick={toggleSidebar}>
+                close
+              </Button>
+            }
+          />
+        </MasterCenter>
+        {(data?.flat()?.filter((d) => !d.state.hidden)?.length ?? 0) > 0 && (
+          <div className="p-4 flex flex-col gap-2">
+            {data
+              ?.flat()
+              ?.filter((d) => !d.state.hidden)
+              .map((node, index) => (
+                <MenuItemRight key={index} node={node} />
+              ))}
+          </div>
+        )}
       </div>
     </div>
   );

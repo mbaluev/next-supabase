@@ -1,6 +1,6 @@
 'use client';
 
-import { WidgetPartners } from '@/components/domains/partners/widget';
+import { WidgetPartners } from '@/components/debug/partners/widget';
 
 const FilesPage = () => {
   return (

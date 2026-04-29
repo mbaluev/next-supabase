@@ -1,7 +1,7 @@
 'use client';
 
-import { Users } from 'lucide-react';
-import { UsersList } from '@/components/domains/users/list';
+import { UsersList } from '@/components/debug/users/list';
+import { ROUTES } from '@/settings/routes';
 import {
   Widget,
   WidgetContent,
@@ -15,10 +15,8 @@ export const WidgetUsers = (props: WidgetProps) => {
   return (
     <Widget variant="background" {...props}>
       <WidgetHeader variant="background" separator>
-        <WidgetIcon>
-          <Users />
-        </WidgetIcon>
-        <WidgetTitle>users</WidgetTitle>
+        <WidgetIcon>{ROUTES.DEBUG_LIST_LOAD.icon}</WidgetIcon>
+        <WidgetTitle>{ROUTES.DEBUG_LIST_LOAD.label}</WidgetTitle>
       </WidgetHeader>
       <WidgetContent variant="padding">
         <UsersList />
