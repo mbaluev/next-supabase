@@ -73,7 +73,7 @@ const WidgetTitle = React.forwardRef<
   HTMLParagraphElement,
   React.HTMLAttributes<HTMLHeadingElement>
 >(({ className, ...props }, ref) => (
-  <h3 ref={ref} className={cn('grow pt-2 text-left', className)} {...props} />
+  <h3 ref={ref} className={cn('grow text-left', className)} {...props} />
 ));
 WidgetTitle.displayName = 'WidgetTitle';
 
