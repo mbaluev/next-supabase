@@ -5,7 +5,6 @@ import React, {
   createContext,
   ComponentRef,
   forwardRef,
-  Fragment,
   useCallback,
   useContext,
   useEffect,
@@ -22,6 +21,7 @@ import { ArrowLeftToLine, ArrowRightFromLine } from 'lucide-react';
 import { CTree, TTreeDTO } from '@/utils/tree';
 import { usePathname } from 'next/navigation';
 import { TRouteDTO } from '@/settings/routes';
+import { Authenticated } from '@/supabase/auth-client';
 
 const SIDEBAR_STORAGE_NAME = 'sidebar-left';
 const SIDEBAR_KEYBOARD_SHORTCUT = 'g';
@@ -291,7 +291,7 @@ const SidebarLeft = forwardRef<HTMLDivElement, SidebarLeftProps>((props, ref) =>
   const classBackdrop = cn('fixed top-0 left-0 w-full h-full z-9 bg-black/25');
 
   return (
-    <Fragment>
+    <Authenticated>
       <nav
         className={classNav}
         ref={ref}
@@ -306,7 +306,7 @@ const SidebarLeft = forwardRef<HTMLDivElement, SidebarLeftProps>((props, ref) =>
         </div>
       </nav>
       {isMobile && openMobile && <div className={classBackdrop} onClick={toggleSidebar} />}
-    </Fragment>
+    </Authenticated>
   );
 });
 SidebarLeft.displayName = 'SidebarLeft';

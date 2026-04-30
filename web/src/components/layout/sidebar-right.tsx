@@ -5,7 +5,6 @@ import React, {
   createContext,
   ComponentRef,
   forwardRef,
-  Fragment,
   useCallback,
   useContext,
   useEffect,
@@ -24,6 +23,7 @@ import { useWindowResize } from '@/hooks/use-window-resize';
 import { CTree, TTreeDTO } from '@/utils/tree';
 import { usePathname } from 'next/navigation';
 import { useSidebarLeft } from '@/components/layout/sidebar-left';
+import { Authenticated } from '@/supabase/auth-client';
 
 const SIDEBAR_STORAGE_NAME = 'sidebar-right';
 const SIDEBAR_KEYBOARD_SHORTCUT = 'h';
@@ -290,7 +290,7 @@ const SidebarRight = forwardRef<HTMLDivElement, SidebarRightProps>((props, ref) 
   const classBackdrop = cn('fixed top-0 left-0 w-full h-full z-9 bg-black/25');
 
   return (
-    <Fragment>
+    <Authenticated>
       <nav
         className={classNav}
         ref={ref}
@@ -305,7 +305,7 @@ const SidebarRight = forwardRef<HTMLDivElement, SidebarRightProps>((props, ref) 
         </div>
       </nav>
       {isMobile && openMobile && <div className={classBackdrop} onClick={toggleSidebar} />}
-    </Fragment>
+    </Authenticated>
   );
 });
 SidebarRight.displayName = 'SidebarRight';
