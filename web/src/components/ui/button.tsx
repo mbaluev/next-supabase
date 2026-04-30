@@ -1,7 +1,11 @@
+'use client';
+
 import * as React from 'react';
 import { Slot } from '@radix-ui/react-slot';
 import { cva, type VariantProps } from 'class-variance-authority';
 import { cn } from '@/utils/cn';
+import { useState, MouseEvent } from 'react';
+import { Check, Copy } from 'lucide-react';
 
 const buttonVariants = cva(
   cn(
@@ -54,16 +58,37 @@ interface ButtonProps
   extends React.ButtonHTMLAttributes<HTMLButtonElement>, VariantProps<typeof buttonVariants> {
   asChild?: boolean;
 }
-
-const Button = React.forwardRef<HTMLButtonElement, ButtonProps>(
-  ({ className, variant, size, asChild = false, ...props }, ref) => {
-    const Comp = asChild ? Slot : variant === 'static' ? 'span' : 'button';
-    return (
-      <Comp className={cn(buttonVariants({ variant, size, className }))} ref={ref} {...props} />
-    );
-  }
-);
+const Button = React.forwardRef<HTMLButtonElement, ButtonProps>((props, ref) => {
+  const { className, variant, size, asChild = false, ...rest } = props;
+  const Comp = asChild ? Slot : variant === 'static' ? 'span' : 'button';
+  return <Comp className={cn(buttonVariants({ variant, size, className }))} ref={ref} {...rest} />;
+});
 Button.displayName = 'Button';
 
-export { Button, buttonVariants };
+interface ButtonCopyProps extends ButtonProps {
+  text?: string | null;
+}
+const ButtonCopy = (props: ButtonCopyProps) => {
+  const { text, children, size, onClick, ...rest } = props;
+  const isIconBtn = size && size.startsWith('icon');
+
+  const [clicked, setClicked] = useState<boolean>(false);
+  const handleClick = async (e: MouseEvent<HTMLButtonElement>) => {
+    e.preventDefault();
+    e.stopPropagation();
+    if (onClick) onClick(e);
+    await navigator.clipboard.writeText(text || '');
+    setClicked(true);
+    setTimeout(() => setClicked(false), 1000);
+  };
+
+  return (
+    <Button size={size} onClick={handleClick} type="button" {...rest}>
+      {clicked ? <Check className="text-success" /> : <Copy />}
+      {!isIconBtn && (children ?? 'copy')}
+    </Button>
+  );
+};
+
+export { buttonVariants, Button, ButtonCopy };
 export type { ButtonProps };

@@ -1,13 +1,13 @@
 import { ReactNode } from 'react';
 import {
   CircleOff,
-  Code,
   LayoutDashboard,
   ReceiptText,
   ShieldCheck,
   UserRoundCog,
   ListCollapse,
   ListRestart,
+  CodeXml,
 } from 'lucide-react';
 
 const EMPTY_PATH = '#';
@@ -57,7 +57,7 @@ const ROUTES: Record<string, TRouteDTO> = {
     name: 'debug',
     label: 'debug',
     path: '/debug',
-    icon: <Code />,
+    icon: <CodeXml />,
   },
   DEBUG_LIST_STATIC: {
     name: 'debug-list-static',

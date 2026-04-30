@@ -2,6 +2,7 @@
 
 import {
   Widget,
+  WidgetButtons,
   WidgetContent,
   WidgetHeader,
   WidgetIcon,
@@ -13,6 +14,7 @@ import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
 import { Award, ScanFace, Mail } from 'lucide-react';
 import { FaGithub } from 'react-icons/fa';
 import { FcGoogle } from 'react-icons/fc';
+import { ButtonCopy } from '@/components/ui/button';
 
 export const WidgetProfile = (props: WidgetProps) => {
   const { user } = useSupabaseUser();
@@ -26,6 +28,11 @@ export const WidgetProfile = (props: WidgetProps) => {
           {!user?.app_metadata.provider && <Award />}
         </WidgetIcon>
         <WidgetTitle>account details</WidgetTitle>
+        <WidgetButtons>
+          <ButtonCopy variant="ghost" text={user?.email}>
+            copy email
+          </ButtonCopy>
+        </WidgetButtons>
       </WidgetHeader>
       <WidgetContent variant="padding">
         <div className="flex gap-6 p-2">

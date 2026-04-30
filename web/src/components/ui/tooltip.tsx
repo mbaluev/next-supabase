@@ -35,19 +35,22 @@ type TooltipTextProps = Omit<TooltipContentProps, 'title'> & {
 const TooltipText = React.forwardRef<
   React.ComponentRef<typeof TooltipPrimitive.Content>,
   TooltipTextProps
->(({ children, title, ...props }, ref) => (
-  <TooltipProvider disableHoverableContent>
-    <Tooltip delayDuration={100}>
-      <TooltipTrigger asChild>{children}</TooltipTrigger>
-      <TooltipPortal>
-        <TooltipContent ref={ref} {...props}>
-          {title}
-          <TooltipArrow className="fill-foreground w-2.5 h-1.5" />
-        </TooltipContent>
-      </TooltipPortal>
-    </Tooltip>
-  </TooltipProvider>
-));
+>(({ children, title, ...props }, ref) => {
+  if (!title) return children;
+  return (
+    <TooltipProvider disableHoverableContent>
+      <Tooltip delayDuration={100}>
+        <TooltipTrigger asChild>{children}</TooltipTrigger>
+        <TooltipPortal>
+          <TooltipContent ref={ref} {...props}>
+            {title}
+            <TooltipArrow className="fill-foreground w-2.5 h-1.5" />
+          </TooltipContent>
+        </TooltipPortal>
+      </Tooltip>
+    </TooltipProvider>
+  );
+});
 TooltipText.displayName = 'TooltipText';
 
 export { Tooltip, TooltipTrigger, TooltipContent, TooltipProvider, TooltipText };
