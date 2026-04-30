@@ -235,7 +235,6 @@ const MenuUserInfo = () => {
     router.push('/');
     router.refresh();
   };
-  console.log(ellipsis);
 
   if (pending) return null;
   if (!user) return null;
