@@ -130,14 +130,8 @@ const SidebarLeftProvider = forwardRef<HTMLDivElement, SidebarLeftProviderProps>
   useEffect(() => {
     const _data = data.clone();
     const node = _data.find((d) => d.data?.path === pathname);
-    _data.deselect();
-    _data.collapseTo(1);
-    if (node?.items && node.items.length > 0) {
-      _data.expand(node.id);
-      _data.check(node.id, true);
-    } else if (node) {
-      _data.select(node.id, true);
-    }
+    if (node) _data.check(node.id, true);
+    else _data.deselect();
     setData(_data);
   }, [pathname]);
 

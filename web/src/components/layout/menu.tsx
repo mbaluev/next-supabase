@@ -47,26 +47,36 @@ const MenuItemPadding = (props: IMenuItemProps<TRouteDTO>) => {
 };
 MenuItemPadding.displayName = 'MenuItemPadding';
 
-const MenuItemContent = (props: IMenuItemProps<TRouteDTO>) => {
-  const { node } = props;
+interface IMenuItemContentProps extends IMenuItemProps<TRouteDTO> {
+  iconOnly?: boolean;
+}
+const MenuItemContent = (props: IMenuItemContentProps) => {
+  const { node, iconOnly } = props;
   const classNameChevron = cn(
     `transition-transform transform duration-${MENU_TRANSITION_DURATION}`,
     !node.state.collapsed && 'rotate-90'
   );
+  if (iconOnly) {
+    return <ChevronRight className={classNameChevron} />;
+  }
   return (
     <Fragment>
       {node.data?.icon}
       <p className="flex-1 text-left">{node.data?.label}</p>
       {Boolean(node.data?.dialog) && <BookOpen />}
-      {node.items.length > 0 && <ChevronRight className={classNameChevron} />}
-      {/*{node.state.selected && <MoveLeft className="text-primary" />}*/}
+      {node.items.length > 0 && !IS_PATH(node.data?.path) && (
+        <ChevronRight className={classNameChevron} />
+      )}
     </Fragment>
   );
 };
 MenuItemContent.displayName = 'MenuItemContent';
 
-const MenuItemToggle = (props: IMenuItemProps<TRouteDTO>) => {
-  const { node, toggleNode } = props;
+interface IMenuItemToggleProps extends IMenuItemProps<TRouteDTO> {
+  iconOnly?: boolean;
+}
+const MenuItemToggle = (props: IMenuItemToggleProps) => {
+  const { node, toggleNode, iconOnly } = props;
   const handleToggle = () => {
     if (toggleNode) toggleNode(node);
   };
@@ -74,10 +84,11 @@ const MenuItemToggle = (props: IMenuItemProps<TRouteDTO>) => {
     <Button
       variant={node.state.selected ? 'ghost-primary' : 'ghost'}
       onClick={handleToggle}
-      className="w-full justify-start"
+      className={cn(!iconOnly && 'w-full justify-start')}
+      size={iconOnly ? 'icon' : undefined}
     >
-      <MenuItemPadding {...props} />
-      <MenuItemContent {...props} />
+      {!iconOnly && <MenuItemPadding {...props} />}
+      <MenuItemContent {...props} iconOnly={iconOnly} />
     </Button>
   );
 };
@@ -116,6 +127,25 @@ const MenuItemLeft = (props: IMenuItemProps<TRouteDTO>) => {
 
   // item toggle
   if (!IS_PATH(node.data.path)) return <MenuItemToggle {..._props} />;
+
+  // item toggle & link
+  if (IS_PATH(node.data.path) && node.items.length > 0) {
+    return (
+      <div className="flex flex-nowrap gap-2">
+        <SidebarLeftButton
+          variant={node.state.selected ? 'ghost-primary' : 'ghost'}
+          className="flex-1"
+          asChild
+        >
+          <Link href={node.data.path}>
+            <MenuItemPadding {..._props} />
+            <MenuItemContent {..._props} />
+          </Link>
+        </SidebarLeftButton>
+        <MenuItemToggle {..._props} iconOnly />
+      </div>
+    );
+  }
 
   // item link
   return (
@@ -300,15 +330,16 @@ const MenuRightContent = () => {
       </div>
       <Separator />
       <div className="flex flex-col flex-1 overflow-y-auto">
-        <MasterCenter>
-          <ErrorBlock
-            icon={<ReceiptText strokeWidth={1.5} className="text-muted-foreground" />}
-            code="details"
-            name="details about selected objects will be displayed here"
-            button={<ButtonClose />}
-          />
-        </MasterCenter>
-        {(data?.flat()?.filter((d) => !d.state.hidden)?.length ?? 0) > 0 && (
+        {data?.isEmpty() ? (
+          <MasterCenter>
+            <ErrorBlock
+              icon={<ReceiptText strokeWidth={1.5} className="text-muted-foreground" />}
+              code="details"
+              name="details about selected objects will be displayed here"
+              button={<ButtonClose />}
+            />
+          </MasterCenter>
+        ) : (
           <div className="p-4 flex flex-col gap-2">
             {data
               ?.flat()

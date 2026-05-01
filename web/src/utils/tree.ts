@@ -149,6 +149,10 @@ export class CTree<T> {
     return toObjectValue(this.root);
   }
 
+  isEmpty(): boolean {
+    return this.flat().filter((d) => !d.state.hidden).length === 0;
+  }
+
   static toTree<T>(tree?: TTreeDTO<T>): CTree<T> {
     const insert = (
       root: CTree<any>,
@@ -240,29 +244,31 @@ export class CTree<T> {
     for (const node of this.preOrderTraversal()) node.state.selected = false;
   }
 
-  select(key: string, value: boolean) {
-    const root = this.get(key);
-    // clear
-    this.deselect();
-    // children
-    for (const node of this.preOrderTraversal(root)) node.state.selected = value;
-    // parent
-    for (const node of this.postOrderTraversal()) {
-      if (node.items.length > 0) {
-        let selected = false;
-        for (const child of node.items) selected = selected || !!child.state.selected;
-        node.state.selected = selected;
-        if (selected) {
-          node.state.collapsed = false;
-          for (const child of node.items) child.state.hidden = false;
-        }
+  selectParents(node: CTreeNode<T>) {
+    if (node.items.length > 0) {
+      let selected = false;
+      for (const child of node.items) selected = selected || !!child.state.selected;
+      node.state.selected = selected;
+      if (selected) {
+        node.state.collapsed = false;
+        for (const child of node.items) child.state.hidden = false;
       }
     }
   }
 
-  check(key: string, value: boolean) {
+  select(key: string, value: boolean) {
     this.deselect();
     const root = this.get(key);
-    if (root) root.state.selected = value;
+    for (const node of this.postOrderTraversal(root)) node.state.selected = value;
+    for (const node of this.postOrderTraversal()) this.selectParents(node);
+  }
+
+  check(key: string, value: boolean) {
+    this.deselect();
+    if (value) this.expand(key);
+    for (const node of this.postOrderTraversal()) {
+      this.selectParents(node);
+      if (node.id === key) node.state.selected = value;
+    }
   }
 }
