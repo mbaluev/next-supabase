@@ -1,11 +1,11 @@
 'use client';
 
-import { WidgetPartners } from '@/components/debug/partners/widget';
+import { WidgetListStatic } from '@/components/debug/list-static/widget';
 
 const FilesPage = () => {
   return (
     <div className="w-full flex flex-col space-y-4">
-      <WidgetPartners />
+      <WidgetListStatic />
     </div>
   );
 };

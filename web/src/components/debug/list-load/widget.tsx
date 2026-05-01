@@ -1,6 +1,6 @@
 'use client';
 
-import { PartnersList } from '@/components/debug/partners/list';
+import { ListLoad } from '@/components/debug/list-load/list';
 import { ROUTES } from '@/settings/routes';
 import {
   Widget,
@@ -11,15 +11,15 @@ import {
   WidgetTitle,
 } from '@/components/layout/widget';
 
-export const WidgetPartners = (props: WidgetProps) => {
+export const WidgetListLoad = (props: WidgetProps) => {
   return (
     <Widget variant="background" {...props}>
       <WidgetHeader variant="background" separator>
-        <WidgetIcon>{ROUTES.DEBUG_LIST_STATIC.icon}</WidgetIcon>
-        <WidgetTitle>{ROUTES.DEBUG_LIST_STATIC.label}</WidgetTitle>
+        <WidgetIcon>{ROUTES.DEBUG_LIST_LOAD.icon}</WidgetIcon>
+        <WidgetTitle>{ROUTES.DEBUG_LIST_LOAD.label}</WidgetTitle>
       </WidgetHeader>
       <WidgetContent variant="padding">
-        <PartnersList />
+        <ListLoad />
       </WidgetContent>
     </Widget>
   );

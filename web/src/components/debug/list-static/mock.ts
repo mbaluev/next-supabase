@@ -1,7 +1,7 @@
 import { guid } from '@/utils/guid';
-import { TPartner } from '@/components/debug/partners/types';
+import { TListStaticItem } from '@/components/debug/list-static/types';
 
-export const mockPartner = (index?: number): TPartner => {
+export const mock_list_static = (index?: number): TListStaticItem => {
   const _index = index ?? 0;
   return {
     id: guid(),

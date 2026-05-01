@@ -1,4 +1,4 @@
-export type TPartner = {
+export type TListStaticItem = {
   id?: string | null;
   name?: string | null;
   index?: number | null;

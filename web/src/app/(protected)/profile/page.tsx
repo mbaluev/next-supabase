@@ -1,7 +1,7 @@
 'use client';
 
 import { WidgetProfile } from '@/components/domains/profile/widget';
-import { ChartTransitions } from '@/components/domains/chart-transitions';
+import { ChartTransitions } from '@/components/charts/transitions';
 
 const ProfilePage = () => {
   return (
