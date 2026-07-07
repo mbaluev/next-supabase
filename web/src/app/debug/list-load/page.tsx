@@ -1,11 +1,11 @@
 'use client';
 
-import { WidgetUsers } from '@/components/domains/users/widget';
+import { WidgetListLoad } from '@/components/debug/list-load/widget';
 
 const FilesPage = () => {
   return (
     <div className="w-full flex flex-col space-y-4">
-      <WidgetUsers />
+      <WidgetListLoad />
     </div>
   );
 };

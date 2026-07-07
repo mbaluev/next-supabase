@@ -1,17 +1,18 @@
 'use client';
 
 import Link from 'next/link';
-import { Button } from '@/components/ui/button';
+import { Button, ButtonCopy } from '@/components/ui/button';
 import { SvgLogo } from '@/components/icons/components/logo';
 import {
   ChevronRight,
   BookOpen,
   LogOut,
-  Camera,
   ArrowRightToLine,
-  SlidersHorizontal,
   ArrowLeftToLine,
   Trash,
+  ReceiptText,
+  ScanFace,
+  TextAlignStart,
 } from 'lucide-react';
 import { TTreeDTO } from '@/utils/tree';
 import { Fragment } from 'react';
@@ -24,6 +25,10 @@ import { handleDialogOpen } from '@/components/ui/dialog-handlers';
 import { usePathname, useRouter, useSearchParams } from 'next/navigation';
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
 import { useSupabaseUser, useSupabaseAuth } from '@/supabase/auth-client';
+import { ErrorBlock } from '@/components/layout/error-block';
+import { MasterCenter } from '@/components/layout/master';
+import { useEllipsis } from '@/hooks/use-ellipsis';
+import { TooltipText } from '@/components/ui/tooltip';
 
 const MENU_PADDING_ITEM = 15;
 const MENU_TRANSITION_DURATION = 100;
@@ -42,26 +47,36 @@ const MenuItemPadding = (props: IMenuItemProps<TRouteDTO>) => {
 };
 MenuItemPadding.displayName = 'MenuItemPadding';
 
-const MenuItemContent = (props: IMenuItemProps<TRouteDTO>) => {
-  const { node } = props;
+interface IMenuItemContentProps extends IMenuItemProps<TRouteDTO> {
+  iconOnly?: boolean;
+}
+const MenuItemContent = (props: IMenuItemContentProps) => {
+  const { node, iconOnly } = props;
   const classNameChevron = cn(
     `transition-transform transform duration-${MENU_TRANSITION_DURATION}`,
     !node.state.collapsed && 'rotate-90'
   );
+  if (iconOnly) {
+    return <ChevronRight className={classNameChevron} />;
+  }
   return (
     <Fragment>
       {node.data?.icon}
       <p className="flex-1 text-left">{node.data?.label}</p>
       {Boolean(node.data?.dialog) && <BookOpen />}
-      {node.items.length > 0 && <ChevronRight className={classNameChevron} />}
-      {/*{node.state.selected && <MoveLeft className="text-primary" />}*/}
+      {node.items.length > 0 && !IS_PATH(node.data?.path) && (
+        <ChevronRight className={classNameChevron} />
+      )}
     </Fragment>
   );
 };
 MenuItemContent.displayName = 'MenuItemContent';
 
-const MenuItemToggle = (props: IMenuItemProps<TRouteDTO>) => {
-  const { node, toggleNode } = props;
+interface IMenuItemToggleProps extends IMenuItemProps<TRouteDTO> {
+  iconOnly?: boolean;
+}
+const MenuItemToggle = (props: IMenuItemToggleProps) => {
+  const { node, toggleNode, iconOnly } = props;
   const handleToggle = () => {
     if (toggleNode) toggleNode(node);
   };
@@ -69,10 +84,11 @@ const MenuItemToggle = (props: IMenuItemProps<TRouteDTO>) => {
     <Button
       variant={node.state.selected ? 'ghost-primary' : 'ghost'}
       onClick={handleToggle}
-      className="w-full justify-start"
+      className={cn(!iconOnly && 'w-full justify-start')}
+      size={iconOnly ? 'icon' : undefined}
     >
-      <MenuItemPadding {...props} />
-      <MenuItemContent {...props} />
+      {!iconOnly && <MenuItemPadding {...props} />}
+      <MenuItemContent {...props} iconOnly={iconOnly} />
     </Button>
   );
 };
@@ -111,6 +127,25 @@ const MenuItemLeft = (props: IMenuItemProps<TRouteDTO>) => {
 
   // item toggle
   if (!IS_PATH(node.data.path)) return <MenuItemToggle {..._props} />;
+
+  // item toggle & link
+  if (IS_PATH(node.data.path) && node.items.length > 0) {
+    return (
+      <div className="flex flex-nowrap gap-2">
+        <SidebarLeftButton
+          variant={node.state.selected ? 'ghost-primary' : 'ghost'}
+          className="flex-1"
+          asChild
+        >
+          <Link href={node.data.path}>
+            <MenuItemPadding {..._props} />
+            <MenuItemContent {..._props} />
+          </Link>
+        </SidebarLeftButton>
+        <MenuItemToggle {..._props} iconOnly />
+      </div>
+    );
+  }
 
   // item link
   return (
@@ -199,7 +234,7 @@ const MenuLeftContent = () => {
       <div className="flex flex-col flex-1 overflow-y-auto">
         <MenuUserInfo />
         <Separator />
-        <div className="p-4 flex flex-col flex-1 space-y-2">
+        <div className="p-4 flex flex-col flex-1 gap-2">
           {data
             ?.flat()
             ?.filter((d) => !d.state.hidden)
@@ -224,9 +259,7 @@ const MenuUserInfo = () => {
   const { user, pending } = useSupabaseUser();
   const { signOut } = useSupabaseAuth();
   const router = useRouter();
-  const pathname = usePathname();
-  const profile_selected = pathname === ROUTES.PROFILE.path;
-
+  const { ref, ellipsis } = useEllipsis();
   const handleLogout = async () => {
     await signOut();
     router.push('/');
@@ -238,28 +271,34 @@ const MenuUserInfo = () => {
 
   return (
     <div className="p-4 flex flex-col space-y-4">
-      <div className="flex space-x-4 items-center">
+      <div className="flex space-x-4">
         <Avatar className="w-20 h-20">
           <AvatarImage src={user.user_metadata?.avatar_url} />
           <AvatarFallback>
-            <Camera className="text-2xl" />
+            <ScanFace className="text-3xl" />
           </AvatarFallback>
         </Avatar>
-        <div className="space-y-2 overflow-hidden flex-1">
-          <p className="overflow-hidden text-ellipsis">{user.email ?? '-'}</p>
-          <p className="overflow-hidden text-ellipsis">{user.user_metadata?.full_name ?? '-'}</p>
+        <div className="overflow-hidden flex-1">
+          <TooltipText title={ellipsis ? user.email : undefined} side="right">
+            <div className="flex gap-2 items-center">
+              <p ref={ref} className="truncate flex-1">
+                {user.email}
+              </p>
+              <ButtonCopy variant="ghost" size="icon" text={user.email} />
+            </div>
+          </TooltipText>
+          <p className="truncate">{user.user_metadata?.full_name ?? '-'}</p>
         </div>
       </div>
       <div className="flex flex-col space-y-2 ">
-        <SidebarLeftButton variant={profile_selected ? 'ghost-primary' : 'ghost'} asChild>
+        <SidebarLeftButton variant="ghost" asChild>
           <Link href={ROUTES.PROFILE.path}>
             {ROUTES.PROFILE.icon}
             <p className="flex-1 text-left">{ROUTES.PROFILE.label}</p>
             {ROUTES.PROFILE.dialog && <BookOpen />}
-            {/*{profile_selected && <MoveLeft className="text-primary" />}*/}
           </Link>
         </SidebarLeftButton>
-        <SidebarLeftButton variant="ghost-destructive" onClick={handleLogout}>
+        <SidebarLeftButton variant="ghost" onClick={handleLogout}>
           <LogOut />
           logout
         </SidebarLeftButton>
@@ -273,11 +312,16 @@ MenuUserInfo.displayName = 'MenuUserInfo';
 
 const MenuRightContent = () => {
   const { toggleSidebar, data } = useSidebarRight();
+  const ButtonClose = () => (
+    <Button variant="link" size="link" onClick={toggleSidebar}>
+      close
+    </Button>
+  );
   return (
     <div className="flex flex-col flex-1 overflow-hidden">
       <div className="p-4 flex gap-4 justify-between items-center">
         <SidebarRightButton variant="static" className="flex-1">
-          <SlidersHorizontal />
+          <TextAlignStart />
           <p>details</p>
         </SidebarRightButton>
         <Button variant="ghost" size="icon" onClick={toggleSidebar}>
@@ -285,15 +329,26 @@ const MenuRightContent = () => {
         </Button>
       </div>
       <Separator />
-      <div className="flex flex-col overflow-y-auto">
-        <div className="p-4 flex flex-col space-y-2">
-          {data
-            ?.flat()
-            ?.filter((d) => !d.state.hidden)
-            .map((node, index) => (
-              <MenuItemRight key={index} node={node} />
-            ))}
-        </div>
+      <div className="flex flex-col flex-1 overflow-y-auto">
+        {data?.isEmpty() ? (
+          <MasterCenter>
+            <ErrorBlock
+              icon={<ReceiptText strokeWidth={1.5} className="text-muted-foreground" />}
+              code="details"
+              name="details about selected objects will be displayed here"
+              button={<ButtonClose />}
+            />
+          </MasterCenter>
+        ) : (
+          <div className="p-4 flex flex-col gap-2">
+            {data
+              ?.flat()
+              ?.filter((d) => !d.state.hidden)
+              .map((node, index) => (
+                <MenuItemRight key={index} node={node} />
+              ))}
+          </div>
+        )}
       </div>
     </div>
   );

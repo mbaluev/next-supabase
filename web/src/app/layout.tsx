@@ -8,8 +8,8 @@ import { SupabaseAuthProvider } from '@/supabase/auth-client';
 import { ThemeProvider } from '@/components/layout/theme';
 import { Layout } from '@/components/layout/layout';
 import { Toaster } from '@/components/ui/sonner';
-import { DialogPrivacyPolicy } from '@/components/domains/dialog-privacy-policy';
-import { DialogTermsConditions } from '@/components/domains/dialog-terms-conditions';
+import { DialogPrivacyPolicy } from '@/components/domains/profile/dialog-privacy-policy';
+import { DialogTermsConditions } from '@/components/domains/profile/dialog-terms-conditions';
 import { Spinner } from '@/components/ui/spinner';
 import './globals.css';
 

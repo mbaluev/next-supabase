@@ -27,12 +27,12 @@ import {
   EChartTransitionsType,
   MOCK_CHART_TRANSITIONS_DATA,
   MOCK_CHART_TRANSITIONS_LEGEND,
-} from '@/components/domains/chart-transitions/mock';
-import { ChartTransitionsCreate } from '@/components/domains/chart-transitions/create';
+} from '@/components/charts/transitions/mock';
+import { ChartTransitionsCreate } from '@/components/charts/transitions/create';
 import { TooltipText } from '@/components/ui/tooltip';
 import { Button } from '@/components/ui/button';
 import { Spinner } from '@/components/ui/spinner';
-import { ChartTransitionsColors } from '@/components/domains/chart-transitions/colors';
+import { ChartTransitionsColors } from '@/components/charts/transitions/colors';
 
 interface IChartTransitionsProps extends WidgetProps {
   name?: string;

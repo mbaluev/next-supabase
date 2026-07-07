@@ -1,9 +1,9 @@
 'use client';
 
 import { cn } from '@/utils/cn';
-import { WidgetAlerts } from '@/components/domains/widgets/alerts';
-import { WidgetSidebars } from '@/components/domains/widgets/sidebars';
-import { WidgetEmpty } from '@/components/domains/widgets/empty';
+import { WidgetAlerts } from '@/components/debug/debug/alerts';
+import { WidgetSidebars } from '@/components/debug/debug/sidebars';
+import { WidgetEmpty } from '@/components/debug/debug/empty';
 
 const DebugPage = () => {
   return (

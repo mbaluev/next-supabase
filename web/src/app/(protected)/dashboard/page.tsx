@@ -1,6 +1,6 @@
 'use client';
 
-import { ChartTransitions } from '@/components/domains/chart-transitions';
+import { ChartTransitions } from '@/components/charts/transitions';
 
 const DashboardPage = () => {
   return (

@@ -1,7 +1,7 @@
 'use client';
 
-import { Users } from 'lucide-react';
-import { UsersList } from '@/components/domains/users/list';
+import { ListStatic } from '@/components/debug/list-static/list';
+import { ROUTES } from '@/settings/routes';
 import {
   Widget,
   WidgetContent,
@@ -11,17 +11,15 @@ import {
   WidgetTitle,
 } from '@/components/layout/widget';
 
-export const WidgetUsers = (props: WidgetProps) => {
+export const WidgetListStatic = (props: WidgetProps) => {
   return (
     <Widget variant="background" {...props}>
       <WidgetHeader variant="background" separator>
-        <WidgetIcon>
-          <Users />
-        </WidgetIcon>
-        <WidgetTitle>users</WidgetTitle>
+        <WidgetIcon>{ROUTES.DEBUG_LIST_STATIC.icon}</WidgetIcon>
+        <WidgetTitle>{ROUTES.DEBUG_LIST_STATIC.label}</WidgetTitle>
       </WidgetHeader>
       <WidgetContent variant="padding">
-        <UsersList />
+        <ListStatic />
       </WidgetContent>
     </Widget>
   );

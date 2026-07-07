@@ -5,7 +5,6 @@ import React, {
   createContext,
   ComponentRef,
   forwardRef,
-  Fragment,
   useCallback,
   useContext,
   useEffect,
@@ -24,6 +23,7 @@ import { useWindowResize } from '@/hooks/use-window-resize';
 import { CTree, TTreeDTO } from '@/utils/tree';
 import { usePathname } from 'next/navigation';
 import { useSidebarLeft } from '@/components/layout/sidebar-left';
+import { Authenticated } from '@/supabase/auth-client';
 
 const SIDEBAR_STORAGE_NAME = 'sidebar-right';
 const SIDEBAR_KEYBOARD_SHORTCUT = 'h';
@@ -56,7 +56,7 @@ function useSidebarRight() {
 }
 
 type SidebarRightProviderBaseProps = {
-  data?: CTree<TRouteDTO>;
+  data?: TTreeDTO<TRouteDTO>;
   name?: string;
   open?: boolean;
   onOpenChange?: (open: boolean) => void;
@@ -89,7 +89,7 @@ const SidebarRightProvider = forwardRef<HTMLDivElement, SidebarRightProviderProp
   const setOpenCallback = (value: boolean | ((value: boolean) => boolean)) => {
     const res = typeof value === 'function' ? value(open) : value;
     if (setOpenProp) return setOpenProp?.(res);
-    setCookie(name || SIDEBAR_STORAGE_NAME, String(res));
+    setCookie(name, String(res));
     _setOpen(res);
   };
   const setOpen = useCallback(setOpenCallback, [setOpenProp, open, name]);
@@ -117,7 +117,7 @@ const SidebarRightProvider = forwardRef<HTMLDivElement, SidebarRightProviderProp
   }, [toggleSidebar]);
 
   // init data
-  const [data, setData] = useState<CTree<TRouteDTO>>(initData ?? new CTree());
+  const [data, setData] = useState<CTree<TRouteDTO>>(CTree.toTree(initData));
   const toggleNodeCallback = (node: TTreeDTO<TRouteDTO>) => {
     const _data = data.clone();
     _data.toggle(node.id);
@@ -132,7 +132,7 @@ const SidebarRightProvider = forwardRef<HTMLDivElement, SidebarRightProviderProp
   useEffect(() => {
     const _data = data.clone();
     const node = _data.find((d) => d.data?.path === pathname);
-    if (node) _data.select(node.id, true);
+    if (node) _data.check(node.id, true);
     else _data.deselect();
     setData(_data);
   }, [pathname]);
@@ -290,7 +290,7 @@ const SidebarRight = forwardRef<HTMLDivElement, SidebarRightProps>((props, ref) 
   const classBackdrop = cn('fixed top-0 left-0 w-full h-full z-9 bg-black/25');
 
   return (
-    <Fragment>
+    <Authenticated>
       <nav
         className={classNav}
         ref={ref}
@@ -305,7 +305,7 @@ const SidebarRight = forwardRef<HTMLDivElement, SidebarRightProps>((props, ref) 
         </div>
       </nav>
       {isMobile && openMobile && <div className={classBackdrop} onClick={toggleSidebar} />}
-    </Fragment>
+    </Authenticated>
   );
 });
 SidebarRight.displayName = 'SidebarRight';

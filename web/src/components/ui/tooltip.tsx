@@ -4,6 +4,7 @@ import * as React from 'react';
 import * as TooltipPrimitive from '@radix-ui/react-tooltip';
 import { cn } from '@/utils/cn';
 import { TooltipArrow, TooltipPortal } from '@radix-ui/react-tooltip';
+import { ReactElement } from 'react';
 
 const TooltipProvider = TooltipPrimitive.Provider;
 
@@ -27,22 +28,29 @@ const TooltipContent = React.forwardRef<
 ));
 TooltipContent.displayName = TooltipPrimitive.Content.displayName;
 
+type TooltipContentProps = React.ComponentPropsWithoutRef<typeof TooltipPrimitive.Content>;
+type TooltipTextProps = Omit<TooltipContentProps, 'title'> & {
+  title?: string | ReactElement;
+};
 const TooltipText = React.forwardRef<
   React.ComponentRef<typeof TooltipPrimitive.Content>,
-  React.ComponentPropsWithoutRef<typeof TooltipPrimitive.Content>
->(({ children, title, ...props }, ref) => (
-  <TooltipProvider disableHoverableContent>
-    <Tooltip delayDuration={100}>
-      <TooltipTrigger asChild>{children}</TooltipTrigger>
-      <TooltipPortal>
-        <TooltipContent ref={ref} {...props}>
-          {title}
-          <TooltipArrow className="fill-foreground w-2.5 h-1.5" />
-        </TooltipContent>
-      </TooltipPortal>
-    </Tooltip>
-  </TooltipProvider>
-));
+  TooltipTextProps
+>(({ children, title, ...props }, ref) => {
+  if (!title) return children;
+  return (
+    <TooltipProvider disableHoverableContent>
+      <Tooltip delayDuration={100}>
+        <TooltipTrigger asChild>{children}</TooltipTrigger>
+        <TooltipPortal>
+          <TooltipContent ref={ref} {...props}>
+            {title}
+            <TooltipArrow className="fill-foreground w-2.5 h-1.5" />
+          </TooltipContent>
+        </TooltipPortal>
+      </Tooltip>
+    </TooltipProvider>
+  );
+});
 TooltipText.displayName = 'TooltipText';
 
 export { Tooltip, TooltipTrigger, TooltipContent, TooltipProvider, TooltipText };

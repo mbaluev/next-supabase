@@ -4,13 +4,11 @@ import { SUPABASE_COOKIE_NAME } from '@/supabase/const';
 import { getRequestOrigin } from '@/utils/request-origin';
 
 const PROTECTED_PREFIXES = [
+  '/profile',
   '/dashboard',
   '/debug',
-  '/files',
-  '/illustrations',
-  '/partners',
-  '/users',
-  '/auth/update-password',
+  '/debug/list-static',
+  '/debug/list-load',
 ];
 
 function matchesPath(pathname: string, prefix: string) {

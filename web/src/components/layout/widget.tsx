@@ -29,7 +29,7 @@ const Widget = React.forwardRef<HTMLDivElement, WidgetProps>(
 );
 Widget.displayName = 'Widget';
 
-const widgetHeaderVariants = cva('flex grow-0 flex-wrap gap-2 justify-between', {
+const widgetHeaderVariants = cva('flex grow-0 flex-wrap gap-2 justify-between items-center', {
   variants: {
     variant: {
       default: 'p-4 bg-background rounded-t-lg',
@@ -73,13 +73,13 @@ const WidgetTitle = React.forwardRef<
   HTMLParagraphElement,
   React.HTMLAttributes<HTMLHeadingElement>
 >(({ className, ...props }, ref) => (
-  <h3 ref={ref} className={cn('grow pt-2 text-left', className)} {...props} />
+  <h3 ref={ref} className={cn('grow text-left', className)} {...props} />
 ));
 WidgetTitle.displayName = 'WidgetTitle';
 
 const WidgetButtons = React.forwardRef<HTMLParagraphElement, React.HTMLAttributes<HTMLDivElement>>(
   ({ className, ...props }, ref) => (
-    <div ref={ref} className={cn('grow-0 flex flex-wrap gap-4', className)} {...props} />
+    <div ref={ref} className={cn('grow-0 flex flex-wrap gap-2', className)} {...props} />
   )
 );
 WidgetButtons.displayName = 'WidgetButtons';

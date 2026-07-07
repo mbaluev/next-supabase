@@ -14,7 +14,6 @@ import {
 import { MenuLeftContent, MenuRightContent } from '@/components/layout/menu';
 import { useServerAuth } from '@/supabase/auth-server';
 import { menuLeft } from '@/settings/menu';
-import { CTree } from '@/utils/tree';
 
 type LayoutProps = {
   children: ReactNode;

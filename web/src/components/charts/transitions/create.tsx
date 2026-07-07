@@ -1,21 +1,21 @@
 import * as d3 from 'd3';
 import moment from 'moment/moment';
-import { MutableRefObject } from 'react';
+import { RefObject } from 'react';
 import { JetBrains_Mono } from 'next/font/google';
 import {
   EChartTransitionsType,
   IChartTransitionsItem,
   IChartTransitionsLegend,
-} from '@/components/domains/chart-transitions/mock';
+} from '@/components/charts/transitions/mock';
 import {
   get_chart_transitions_fill_color,
   get_chart_transitions_stroke_color,
-} from '@/components/domains/chart-transitions/colors';
+} from '@/components/charts/transitions/colors';
 
 const font = JetBrains_Mono({ subsets: ['latin'] });
 
 export const ChartTransitionsCreate = (
-  ref: MutableRefObject<any>,
+  ref: RefObject<any>,
   id: string,
   data: IChartTransitionsItem[],
   legend: IChartTransitionsLegend[],
@@ -34,7 +34,7 @@ export const ChartTransitionsCreate = (
   const opacityDots = 1;
   const strokeWidth = 2;
   const strokeColor = 'stroke-gray-500';
-  const tooltipThreshold = 20;
+  const tooltipThreshold = 0;
   const tooltipPadding = 5;
   const paddingRect = 0.5;
   const xTickPadding = -15;
@@ -490,7 +490,7 @@ export const ChartTransitionsCreate = (
       .selectAll('circle')
       .data(_dots)
       .join('circle')
-      .attr('class', (d: any) => `fill-${z(d.key)}`)
+      .attr('class', (d: any) => `fill-[hsl(var(--${z(d.key)}))]`)
       .attr('stroke', '#fff')
       .attr('stroke-width', 1)
       .attr('r', 3)
@@ -665,7 +665,7 @@ export const ChartTransitionsCreate = (
       .attr('id', idTooltip)
       .attr(
         'class',
-        'absolute flex flex-col w-[200px] px-4 py-2 gap-4 rounded-md border bg-foreground text-background hidden'
+        'absolute z-1000 flex flex-col w-[200px] px-4 py-2 gap-4 rounded-md border bg-foreground text-background hidden'
       );
   }
   function renderTooltip(item: any) {
@@ -698,13 +698,13 @@ export const ChartTransitionsCreate = (
     if (item && elemSvg && elemTooltip) {
       const elemRect = elemSvg.getBoundingClientRect();
       const elemTRect = elemTooltip.getBoundingClientRect();
-      const offsetY = elemRect.top - bodyRect.top;
+      const offsetY = elemRect.top - bodyRect.top - elemTRect.height;
       const offsetX = elemRect.left - bodyRect.left;
 
       const tooltipY = offsetY - tooltipPadding;
-      let tooltipX = offsetX + x(item.date) + x.bandwidth() + tooltipPadding;
-      if (tooltipX + elemTRect.width > bodyRect.right - tooltipThreshold)
-        tooltipX = offsetX + x(item.date) - elemTRect.width - tooltipPadding;
+      let tooltipX = offsetX + x(item.date); // + x.bandwidth() + tooltipPadding;
+      if (tooltipX + elemTRect.width > elemRect.right - tooltipThreshold)
+        tooltipX = offsetX + x(item.date) - elemTRect.width + x.bandwidth(); // - tooltipPadding;
       if (tooltipX < tooltipThreshold) tooltipX = tooltipThreshold;
 
       renderTooltip(item);

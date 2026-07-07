@@ -1,8 +1,8 @@
 import { ReactNode } from 'react';
 import { MasterCenter } from '@/components/layout/master';
 
-const CenterLayout = ({ children }: { children: ReactNode }) => {
+const HomeLayout = ({ children }: { children: ReactNode }) => {
   return <MasterCenter>{children}</MasterCenter>;
 };
 
-export default CenterLayout;
+export default HomeLayout;

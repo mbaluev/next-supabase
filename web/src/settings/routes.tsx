@@ -1,14 +1,13 @@
 import { ReactNode } from 'react';
 import {
   CircleOff,
-  Code,
   LayoutDashboard,
   ReceiptText,
   ShieldCheck,
   UserRoundCog,
-  Image as ImageIcon,
-  BriefcaseBusiness,
-  Users,
+  ListCollapse,
+  ListRestart,
+  CodeXml,
 } from 'lucide-react';
 
 const EMPTY_PATH = '#';
@@ -28,12 +27,6 @@ const ROUTES: Record<string, TRouteDTO> = {
     label: 'home',
     path: '/',
   },
-  PROFILE: {
-    name: 'profile',
-    label: 'profile',
-    path: '/profile',
-    icon: <UserRoundCog />,
-  },
   PRIVACY_POLICY: {
     name: 'privacy-policy',
     label: 'privacy policy',
@@ -48,40 +41,40 @@ const ROUTES: Record<string, TRouteDTO> = {
     icon: <ReceiptText />,
     dialog: true,
   },
+  PROFILE: {
+    name: 'profile',
+    label: 'profile',
+    path: '/profile',
+    icon: <UserRoundCog />,
+  },
   DASHBOARD: {
     name: 'dashboard',
     label: 'dashboard',
     path: '/dashboard',
     icon: <LayoutDashboard />,
   },
-  PARTNERS: {
-    name: 'partners',
-    label: 'partners',
-    path: '/partners',
-    icon: <BriefcaseBusiness />,
-  },
-  USERS: {
-    name: 'users',
-    label: 'users',
-    path: '/users',
-    icon: <Users />,
-  },
-  ILLUSTRATIONS: {
-    name: 'illustrations',
-    label: 'illustrations',
-    path: '/illustrations',
-    icon: <ImageIcon />,
-  },
   DEBUG: {
     name: 'debug',
     label: 'debug',
     path: '/debug',
-    icon: <Code />,
+    icon: <CodeXml />,
   },
-  XXX: {
-    name: 'xxx',
+  DEBUG_LIST_STATIC: {
+    name: 'debug-list-static',
+    label: 'list static',
+    path: '/debug/list-static',
+    icon: <ListCollapse />,
+  },
+  DEBUG_LIST_LOAD: {
+    name: 'debug-list-load',
+    label: 'list load',
+    path: '/debug/list-load',
+    icon: <ListRestart />,
+  },
+  DEBUG_XXX: {
+    name: 'debug-xxx',
     label: 'xxx',
-    path: '/xxx',
+    path: '/debug/xxx',
     icon: <CircleOff />,
   },
 };

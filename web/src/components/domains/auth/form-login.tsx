@@ -86,6 +86,7 @@ export const FormLogin = () => {
               <FormMessage />
             </FormItem>
           )}
+          rules={{ required: true }}
         />
         <FormField
           control={form.control}
@@ -103,6 +104,7 @@ export const FormLogin = () => {
               <FormMessage />
             </FormItem>
           )}
+          rules={{ required: true }}
         />
         <Button variant="link" size="link" asChild>
           <Link href="/auth/reset">forgot password?</Link>

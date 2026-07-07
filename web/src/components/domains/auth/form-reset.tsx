@@ -56,6 +56,7 @@ export const FormReset = () => {
                 <FormMessage />
               </FormItem>
             )}
+            rules={{ required: true }}
           />
         </div>
         <AlertError message={error} />
