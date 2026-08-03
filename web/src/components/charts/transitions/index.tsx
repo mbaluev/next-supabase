@@ -36,10 +36,12 @@ import { ChartTransitionsColors } from '@/components/charts/transitions/colors';
 
 interface IChartTransitionsProps extends WidgetProps {
   name?: string;
+  title?: string;
+  defaultType?: EChartTransitionsType;
 }
 
 export const ChartTransitions = (props: IChartTransitionsProps) => {
-  const { name } = props;
+  const { name, title, defaultType, ...rest } = props;
 
   // load data
   const transitions: any = MOCK_CHART_TRANSITIONS_DATA;
@@ -54,7 +56,7 @@ export const ChartTransitions = (props: IChartTransitionsProps) => {
   const params = useSearchParams();
   const pathname = usePathname();
   const typeName = name ?? 'type';
-  const type = params.get(typeName) ?? DEFAULT_CHART_TRANSITIONS_TYPE;
+  const type = params.get(typeName) ?? defaultType ?? DEFAULT_CHART_TRANSITIONS_TYPE;
   const id = useMemo(() => `widget-chart-${v4()}`, []);
 
   // helpers
@@ -105,12 +107,12 @@ export const ChartTransitions = (props: IChartTransitionsProps) => {
   }, [ref, type, data]);
 
   return (
-    <Widget variant="background" {...props}>
+    <Widget variant="background" {...rest}>
       <WidgetHeader variant="padding" separator>
         <WidgetIcon>
           <Activity />
         </WidgetIcon>
-        <WidgetTitle>activity</WidgetTitle>
+        <WidgetTitle>{title ?? 'activity'}</WidgetTitle>
         <WidgetButtons>
           <TooltipText title="stacked bar chart" side="top">
             <Button

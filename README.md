@@ -1,12 +1,30 @@
 # next-supabase
 
-| Dark | Light |
-|------|-------|
-| ![Dark 1](assets/1-dark.png) | ![Light 1](assets/1-light.png) |
-| ![Dark 2](assets/2-dark.png) | ![Light 2](assets/2-light.png) |
-| ![Dark 3](assets/3-dark.png) | ![Light 3](assets/3-light.png) |
-
 A production-ready skeleton that bundles a **Next.js 15** application with a fully **self-hosted Supabase** stack, all orchestrated via a single `docker-compose.yml`.
+
+## Contents
+
+- [Screenshots](#screenshots)
+- [What's included](#whats-included)
+- [Prerequisites](#prerequisites)
+- [Quick start](#quick-start)
+- [Accessing services](#accessing-services)
+- [Project structure](#project-structure)
+- [Local development (Next.js only)](#local-development-nextjs-only)
+- [Configuring secrets](#configuring-secrets)
+- [Stopping and resetting](#stopping-and-resetting)
+- [Updating Supabase](#updating-supabase)
+- [License](#license)
+
+## Screenshots
+
+Home, login, and dashboard pages shown in dark and light mode.
+
+| Dark                                    | Light                                    |
+|-----------------------------------------|------------------------------------------|
+| ![home](assets/home-dark.png)           | ![home](assets/home-light.png)           |
+| ![login](assets/login-dark.png)         | ![login](assets/login-light.png)         |
+| ![dashboard](assets/dashboard-dark.png) | ![dashboard](assets/dashboard-light.png) |
 
 ## What's included
 
@@ -40,6 +58,9 @@ sh ./utils/generate-keys.sh
 
 # 5. Start everything
 docker compose up -d
+
+# 6. Rebuild and start only "web" container
+docker compose up -d --build web
 ```
 
 After a minute or two all containers should be healthy:
@@ -73,8 +94,9 @@ next-supabase/
 │   ├── src/
 │   │   ├── app/              # App Router pages
 │   │   ├── middleware.ts     # Auth token refresh
-│   │   └── lib/supabase/     # Browser & server client utilities
+│   │   └── supabase/         # Browser & server client utilities
 │   └── ...
+├── migrations/               # SQL migrations applied to the Postgres instance
 ├── volumes/                  # Supabase service configs (fetched by setup.sh)
 └── utils/                    # Supabase helper scripts (fetched by setup.sh)
 ```
