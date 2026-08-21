@@ -1,20 +1,6 @@
-'use client';
-
-export const ChartTransitionsColors = () => {
-  return (
-    <div className="hidden">
-      <div className="bg-chart-1" />
-      <div className="bg-chart-2" />
-      <div className="bg-chart-3" />
-      <div className="fill-[hsl(var(--chart-1))]" />
-      <div className="fill-[hsl(var(--chart-2))]" />
-      <div className="fill-[hsl(var(--chart-3))]" />
-      <div className="stroke-[hsl(var(--chart-1))]" />
-      <div className="stroke-[hsl(var(--chart-2))]" />
-      <div className="stroke-[hsl(var(--chart-3))]" />
-    </div>
-  );
-};
+// The classes returned below are built at runtime and never appear literally in
+// any source file, so they are kept alive by `@source inline(...)` in
+// globals.css rather than by a hidden marker element in the tree.
 
 export const get_chart_transitions_fill_color = (color: string) => {
   if (color === 'chart-1') return 'fill-[hsl(var(--chart-1))]';

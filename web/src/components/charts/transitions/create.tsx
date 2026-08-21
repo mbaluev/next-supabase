@@ -14,14 +14,19 @@ import {
 
 const font = JetBrains_Mono({ subsets: ['latin'] });
 
+export interface IChartTransitions {
+  update: (data: IChartTransitionsItem[], layout: EChartTransitionsType) => void;
+  remove: () => void;
+}
+
 export const ChartTransitionsCreate = (
-  ref: RefObject<any>,
+  ref: RefObject<HTMLDivElement | null>,
   id: string,
   data: IChartTransitionsItem[],
   legend: IChartTransitionsLegend[],
-  type: string,
+  type: EChartTransitionsType,
   formatValue: (value: any) => string
-) => {
+): IChartTransitions => {
   const idTooltip = `${id}-tooltip`;
 
   // props
@@ -45,23 +50,32 @@ export const ChartTransitionsCreate = (
   let svg: any = undefined;
   function remove() {
     d3.selectAll(`#${id}`).remove();
+    // the tooltip lives on <body>, not inside ref.current, so it has to be
+    // torn down explicitly or it outlives the chart it belongs to
+    d3.selectAll(`#${idTooltip}`).remove();
   }
   function init() {
     remove();
 
+    // callers only invoke this once ref.current is mounted
+    const element = ref.current!;
+
     // declare the chart dimensions and _margins.
-    dims = { width: ref.current.clientWidth, height: ref.current.clientHeight };
+    dims = { width: element.clientWidth, height: element.clientHeight };
     margin = { top: 0, right: 0, bottom: 10, left: 0 };
 
     // create the SVG container.
     svg = d3
-      .select(ref.current)
+      .select(element)
       .append('svg')
       .attr('id', id)
       .attr('viewBox', [0, 0, dims.width, dims.height] as any);
   }
 
   // data
+  // the dataset currently on screen; reassigned by create/update so that
+  // pointer handlers resolve against the same rows the chart is drawing
+  let _current: IChartTransitionsItem[] = data;
   let _keys: string[] = [];
   let _names: string[] = [];
   let _grouped: Record<string, any>[] = [];
@@ -211,7 +225,7 @@ export const ChartTransitionsCreate = (
     xticks.selectAll('line').attr('class', strokeColor);
     xaxis.selectAll('path').attr('class', strokeColor);
   }
-  function updateXAxis(layout: string) {
+  function updateXAxis(layout: EChartTransitionsType) {
     xaxis
       .transition()
       .duration(duration)
@@ -241,7 +255,7 @@ export const ChartTransitionsCreate = (
   }
 
   // y-axis
-  function updateYAxis(layout: string) {
+  function updateYAxis(layout: EChartTransitionsType) {
     if (
       layout === EChartTransitionsType.stackedBarChart ||
       layout === EChartTransitionsType.stackedAreaChart
@@ -302,7 +316,7 @@ export const ChartTransitionsCreate = (
 
   // rect
   let rect: any = undefined;
-  function drawRect(layout: string) {
+  function drawRect(layout: EChartTransitionsType) {
     rect = group
       .selectAll('rect')
       .data((d: any) => d)
@@ -378,7 +392,7 @@ export const ChartTransitionsCreate = (
     areas2 = svg.append('g').attr('class', 'areas');
     areaFunc = d3.area().curve(d3.curveBumpX).x(xCurve);
   }
-  function drawArea(layout: string) {
+  function drawArea(layout: EChartTransitionsType) {
     const isAreaGrouped = layout === EChartTransitionsType.areaChart;
     const isAreaStacked = layout === EChartTransitionsType.stackedAreaChart;
     const isArea = isAreaGrouped || isAreaStacked;
@@ -431,7 +445,7 @@ export const ChartTransitionsCreate = (
     lines = svg.append('g').attr('class', 'lines');
     line = d3.line().curve(d3.curveBumpX).x(xCurve).y(yCurve);
   }
-  function drawLine(layout: string) {
+  function drawLine(layout: EChartTransitionsType) {
     const isLineGrouped = layout == EChartTransitionsType.lineChart;
     line.y(y(0));
     line.y(yCurve);
@@ -523,7 +537,7 @@ export const ChartTransitionsCreate = (
 
   // change
   let prevType = type;
-  function changeBarStacked(layout: string, prevLayout: string) {
+  function changeBarStacked(layout: EChartTransitionsType, prevLayout: EChartTransitionsType) {
     switch (prevLayout) {
       case EChartTransitionsType.stackedBarChart:
         updateRectStackedY();
@@ -544,7 +558,7 @@ export const ChartTransitionsCreate = (
         drawRect(layout);
     }
   }
-  function changeBarGrouped(layout: string, prevLayout: string) {
+  function changeBarGrouped(layout: EChartTransitionsType, prevLayout: EChartTransitionsType) {
     switch (prevLayout) {
       case EChartTransitionsType.stackedBarChart:
         updateRectGrouped();
@@ -566,7 +580,7 @@ export const ChartTransitionsCreate = (
         break;
     }
   }
-  function changeAreaStacked(layout: string, prevLayout: string) {
+  function changeAreaStacked(layout: EChartTransitionsType, prevLayout: EChartTransitionsType) {
     switch (prevLayout) {
       case EChartTransitionsType.stackedBarChart:
         removeRect();
@@ -588,7 +602,7 @@ export const ChartTransitionsCreate = (
         break;
     }
   }
-  function changeAreaGrouped(layout: string, prevLayout: string) {
+  function changeAreaGrouped(layout: EChartTransitionsType, prevLayout: EChartTransitionsType) {
     switch (prevLayout) {
       case EChartTransitionsType.stackedBarChart:
         removeRect();
@@ -610,7 +624,7 @@ export const ChartTransitionsCreate = (
         break;
     }
   }
-  function changeLine(layout: string, prevLayout: string) {
+  function changeLine(layout: EChartTransitionsType, prevLayout: EChartTransitionsType) {
     switch (prevLayout) {
       case EChartTransitionsType.stackedBarChart:
         removeRect();
@@ -633,7 +647,7 @@ export const ChartTransitionsCreate = (
         break;
     }
   }
-  function change(layout: string, prevLayout: string) {
+  function change(layout: EChartTransitionsType, prevLayout: EChartTransitionsType) {
     type = layout;
     switch (layout) {
       case EChartTransitionsType.stackedBarChart:
@@ -731,7 +745,7 @@ export const ChartTransitionsCreate = (
   function events() {
     function pointerMoved(event: any) {
       const [xm] = d3.pointer(event);
-      const least = d3.least(data, (d: any) => {
+      const least = d3.least(_current, (d: any) => {
         return Math.hypot((x(d.date) as number) + x.bandwidth() / 2 - xm, 0);
       });
       showTooltip(least);
@@ -753,9 +767,10 @@ export const ChartTransitionsCreate = (
   }
 
   // create
-  function create(data: any[], layout: string) {
+  function create(_data: IChartTransitionsItem[], layout: EChartTransitionsType) {
+    _current = _data;
     init();
-    calcData(data);
+    calcData(_data);
     scales();
     drawGroups();
     drawRect(layout);
@@ -767,8 +782,9 @@ export const ChartTransitionsCreate = (
     tooltip();
     events();
   }
-  function update(data: any[], layout: string) {
-    calcData(data);
+  function update(_data: IChartTransitionsItem[], layout: EChartTransitionsType) {
+    _current = _data;
+    calcData(_data);
     updateYAxis(layout);
     updateGroups();
     updateRect();
