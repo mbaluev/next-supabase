@@ -6,7 +6,7 @@ This file provides guidance to Claude Code (claude.ai/code) when working with co
 
 This repo has two layers that are easy to conflate:
 
-- **Root** — a self-hosted Supabase stack (Postgres, GoTrue, PostgREST, Realtime, Storage, Kong, Studio, etc.) defined entirely in `docker-compose.yml`. `volumes/` and `utils/` are fetched from the upstream Supabase repo via `setup.sh` — treat them as vendored, not hand-edited.
+- **Root** — a self-hosted Supabase stack (Postgres, GoTrue, PostgREST, Realtime, Storage, Edge Functions, Kong gateway, Supavisor pooler, Logflare analytics, Vector, imgproxy, Studio, etc.) defined entirely in `docker-compose.yml`, plus the Next.js app as the `web` service. `volumes/` and `utils/` (Supabase's nginx/kong/postgres configs and helper scripts) are fetched from the upstream Supabase repo via `setup.sh` — they are not committed here and won't exist until `setup.sh` has been run; treat them as vendored, not hand-edited.
 - **`web/`** — the actual product code: a Next.js 15 (App Router) + TypeScript + Tailwind v4 app. Nearly all Claude Code work happens here.
 
 ## Commands (run from `web/`)
@@ -18,9 +18,18 @@ yarn start        # run production build
 yarn lint         # next lint
 ```
 
-There is no test runner configured in this project.
+There is no test runner configured in this project — do not assume Jest/Vitest exist.
 
 Full stack (Supabase + web in Docker) is started from the repo root with `docker compose up -d`; see `README.md` for first-time setup (`setup.sh`, `.env`, `utils/generate-keys.sh`). For iterating on the web app alone, run Supabase via Docker and `yarn dev` locally against it — the app needs `NEXT_PUBLIC_SUPABASE_URL` / `NEXT_PUBLIC_SUPABASE_ANON_KEY` in `web/.env.local`.
+
+## Supabase env var split (important, easy to get wrong)
+
+There are two parallel sets of Supabase env vars and they are NOT interchangeable:
+
+- `NEXT_PUBLIC_SUPABASE_URL` / `NEXT_PUBLIC_SUPABASE_ANON_KEY` — used by the **browser** client, resolves to the public URL (e.g. `http://localhost:8000`).
+- `SUPABASE_URL` / `SUPABASE_ANON_KEY` (no `NEXT_PUBLIC_` prefix) — used by **server-side** code (middleware, route handlers, server components), resolves to the internal Docker network address (`http://kong:8000`).
+
+`src/supabase/server.ts` and `src/supabase/proxy.ts` both fall back to the `NEXT_PUBLIC_` vars when the server-only ones aren't set (`process.env.SUPABASE_URL ?? process.env.NEXT_PUBLIC_SUPABASE_URL!`), so local dev without Docker still works. When adding new server-side Supabase access, follow this same fallback pattern rather than hardcoding one var.
 
 ## Auth architecture
 
@@ -50,7 +59,7 @@ Route groups under `src/app/`:
 - `(protected)` — dashboard, profile, debug pages; wrapped in `MasterDefault` layout
 - `auth/` — login, register, reset, error, and the OAuth `callback/route.ts`
 - `debug/` — scratch pages for exercising components (list-load, list-static) — a pattern to copy when prototyping a new widget in isolation
-- `(_sample)` — sample/reference implementation, not routed (leading underscore)
+- `(_sample)` — sample/reference implementation, not routed (leading underscore); a demo Supabase read (`select('*').from('sample')`) shown on the home page as a "does the DB connection work" smoke test. Safe to delete/replace when building the real product — not core architecture.
 
 Route metadata (path, label, icon) is centralized in `src/settings/routes.tsx` as the `ROUTES` map — pages don't hardcode paths/labels, they reference `ROUTES.X`. Sidebar navigation trees are built from this map via `CTree` (`src/utils/tree.ts`) in `src/settings/menu.tsx`, then rendered by `src/components/layout/menu.tsx`. To add a nav entry: add it to `ROUTES`, then `menuLeft.insert(...)` it into the tree.
 
@@ -62,14 +71,19 @@ Route metadata (path, label, icon) is centralized in `src/settings/routes.tsx` a
 
 `src/components/layout/widget.tsx` defines the `Widget`/`WidgetHeader`/`WidgetTitle`/`WidgetContent` primitives used to build dashboard cards — most feature UI (debug widgets, profile widget, chart widgets) is composed from these rather than raw markup.
 
+`src/components/layout/virtualize.tsx` defines `VirtualizeWindow<T>`, a generic window-virtualizer built on `@tanstack/react-virtual`, with infinite-scroll fetch-next-page support.
+
 ## Component conventions
 
 - `src/components/ui/` — shadcn-style primitives wrapping Radix UI (button, dialog, select, etc.), styled via `class-variance-authority` + Tailwind and the `cn()` helper (`src/utils/cn.ts`).
 - `src/components/domains/<domain>/` — feature-specific components grouped by domain (`auth`, `profile`), e.g. `form-login.tsx`, `widget-login.tsx`. Follow this domain grouping for new features rather than a flat `components/` dump.
+- `src/components/debug/` — parallel structure per debug page: `fetch.ts`/`mock.ts` (data), `types.ts`, `list.tsx`, `widget.tsx`. Useful as a reference pattern when building a new data-driven list feature (static vs. paginated/infinite-load variants).
 - `src/components/charts/` — D3-based chart primitives.
+- `src/components/icons/` — `src/*.svg` are the source assets; `components/*.tsx` are the generated/wrapped React icon components.
 - Theming uses CSS variables (`--color-*`, HSL-based) defined in `globals.css` and mapped into Tailwind's `@theme`; dark mode via `next-themes` using the `class` strategy. Reuse existing tokens (`primary`, `destructive`, `success`, `warning`, `info`, `chart-1..3`, etc.) instead of introducing new colors.
 
 ## Style
 
-- Prettier is authoritative (`web/.prettierrc.js`): single quotes, semicolons, 100-char width, trailing commas (es5), 2-space indent. Run through your editor/`next lint`, don't hand-format.
+- Prettier is authoritative (`web/.prettierrc.js`): single quotes, semicolons, 100-char width, trailing commas (es5), 2-space indent, arrow-parens always. Run through your editor/`next lint`, don't hand-format.
 - Path alias `@/*` → `web/src/*` (see `tsconfig.json`).
+- `next.config.ts` uses `output: 'standalone'` — required for the multi-stage Dockerfile, which copies `.next/standalone` + `.next/static` into the final image. `NEXT_PUBLIC_*` vars must be passed as Docker build `ARG`s (baked in at build time), not just runtime env — see `web/Dockerfile`.
