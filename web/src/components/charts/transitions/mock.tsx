@@ -25,6 +25,17 @@ const length = 75;
 
 export const DEFAULT_CHART_TRANSITIONS_TYPE = EChartTransitionsType.stackedBarChart;
 
+// the type is read from a user-editable query param, so it has to be checked
+// against the enum before it reaches the chart — an unknown layout matches no
+// branch in create.tsx's change() and leaves the chart stuck
+export const parseChartTransitionsType = (
+  value: string | null | undefined,
+  fallback: EChartTransitionsType = DEFAULT_CHART_TRANSITIONS_TYPE
+): EChartTransitionsType => {
+  const types = Object.values(EChartTransitionsType) as string[];
+  return value && types.includes(value) ? (value as EChartTransitionsType) : fallback;
+};
+
 export const MOCK_CHART_TRANSITIONS_DATA: IChartTransitionsItem[] = Array.from({ length }).map(
   (_, i) => {
     return {

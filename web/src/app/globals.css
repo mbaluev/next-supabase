@@ -1,6 +1,12 @@
 @import "tailwindcss";
 @import "tw-animate-css";
 
+/* chart series colors are applied by d3 from a runtime lookup, so Tailwind
+   never sees them in the source and would otherwise purge them */
+@source inline("bg-chart-{1,2,3}");
+@source inline("fill-[hsl(var(--chart-{1,2,3}))]");
+@source inline("stroke-[hsl(var(--chart-{1,2,3}))]");
+
 @custom-variant dark (&:is(.dark *));
 
 @theme {
