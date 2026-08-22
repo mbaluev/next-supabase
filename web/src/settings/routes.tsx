@@ -54,6 +54,12 @@ const ROUTES: Record<string, TRouteDTO> = {
     path: '/dashboard',
     icon: <LayoutDashboard />,
   },
+  TCP: {
+    name: 'tcp',
+    label: 'tcp',
+    path: '/tcp',
+    icon: <EthernetPort />,
+  },
   DEBUG: {
     name: 'debug',
     label: 'debug',
@@ -77,12 +83,6 @@ const ROUTES: Record<string, TRouteDTO> = {
     label: 'xxx',
     path: '/debug/xxx',
     icon: <CircleOff />,
-  },
-  DEBUG_TCP: {
-    name: 'tcp',
-    label: 'tcp',
-    path: '/debug/tcp',
-    icon: <EthernetPort />,
   },
 };
 
