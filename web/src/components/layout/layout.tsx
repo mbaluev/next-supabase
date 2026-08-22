@@ -14,6 +14,7 @@ import {
 import { MenuLeftContent, MenuRightContent } from '@/components/layout/menu';
 import { useServerAuth } from '@/supabase/auth-server';
 import { menuLeft } from '@/settings/menu';
+import { TcpApi } from '@/components/domains/tcp/server';
 
 type LayoutProps = {
   children: ReactNode;
@@ -27,11 +28,13 @@ export const Layout = async (props: LayoutProps) => {
   return (
     <LayoutSidebarLeft open={leftOpen} width={leftWidth}>
       <LayoutSidebarRight open={rightOpen} width={rightWidth}>
-        <div className="flex flex-col grow">
-          <Header />
-          <main className="flex flex-col grow">{children}</main>
-          <Footer />
-        </div>
+        <TcpApi>
+          <div className="flex flex-col grow">
+            <Header />
+            <main className="flex flex-col grow">{children}</main>
+            <Footer />
+          </div>
+        </TcpApi>
       </LayoutSidebarRight>
     </LayoutSidebarLeft>
   );

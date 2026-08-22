@@ -5,7 +5,7 @@ import { WidgetTcpOutput } from '@/components/domains/tcp/output';
 
 const TCPPage = () => {
   return (
-    <div className="w-full grid grid-cols-2 gap-4">
+    <div className="w-full flex flex-col space-y-4">
       <WidgetTcpInput />
       <WidgetTcpOutput />
     </div>
