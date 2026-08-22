@@ -8,6 +8,7 @@ import {
   ListCollapse,
   ListRestart,
   CodeXml,
+  EthernetPort,
 } from 'lucide-react';
 
 const EMPTY_PATH = '#';
@@ -76,6 +77,12 @@ const ROUTES: Record<string, TRouteDTO> = {
     label: 'xxx',
     path: '/debug/xxx',
     icon: <CircleOff />,
+  },
+  DEBUG_TCP: {
+    name: 'tcp',
+    label: 'tcp',
+    path: '/debug/tcp',
+    icon: <EthernetPort />,
   },
 };
 
