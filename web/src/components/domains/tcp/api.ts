@@ -10,6 +10,7 @@ interface ITcpMessage {
 interface ITcpApi {
   sendMessage(msg: ITcpMessage): void;
   onReceive(handler: (msg: ITcpMessage) => void): void;
+  disconnect(): void;
 }
 interface IReliableApi {
   limit: number;
@@ -17,6 +18,7 @@ interface IReliableApi {
   sendMessage(msg: string): void;
   onReceive(handler: (msg: string) => void): void;
   init(limit: number): void;
+  disconnect(): void;
 }
 
 // tcpApi
@@ -29,6 +31,9 @@ const tcpApi: ITcpApi = {
   },
   onReceive(handler) {
     onMessageHandlers.add(handler);
+  },
+  disconnect() {
+    onMessageHandlers.clear();
   },
 };
 
@@ -75,6 +80,9 @@ const reliableApi: IReliableApi = {
         }
       }
     });
+  },
+  disconnect() {
+    onReliableMessageHandlers.clear();
   },
 };
 

@@ -15,6 +15,10 @@ const TcpApiProvider = ({ children }: { children: ReactNode }) => {
     tcpApi.onReceive((msg: ITcpMessage) => setData((prev) => [msg, ...prev]));
     reliableApi.init(10);
     reliableApi.onReceive((msg: string) => setData((prev) => [msg, ...prev]));
+    return () => {
+      tcpApi.disconnect();
+      reliableApi.disconnect();
+    };
   }, []);
 
   return <TcpApiContext.Provider value={{ data, setData }}>{children}</TcpApiContext.Provider>;
