@@ -2,7 +2,7 @@
 
 import { cn } from '@/utils/cn';
 import { WidgetAlerts } from '@/components/debug/debug/alerts';
-import { WidgetSidebars } from '@/components/debug/debug/sidebars';
+import { WidgetShortcuts } from '@/components/debug/debug/shortcuts';
 import { WidgetEmpty } from '@/components/debug/debug/empty';
 
 const DebugPage = () => {
@@ -16,7 +16,7 @@ const DebugPage = () => {
         )}
       >
         <WidgetAlerts />
-        <WidgetSidebars />
+        <WidgetShortcuts />
         <WidgetEmpty />
       </div>
     </div>

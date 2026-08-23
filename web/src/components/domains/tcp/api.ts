@@ -1,10 +1,11 @@
 interface ITcpMessage {
-  message: string;
   headers: {
     id: string;
+    type: 'MSG' | 'ACK';
     len: number;
     pos: number;
   };
+  message?: string;
 }
 interface ITcpApi {
   sendMessage(msg: ITcpMessage): void;
@@ -13,71 +14,69 @@ interface ITcpApi {
 interface IReliableApi {
   limit: number;
   messages: Map<string, { parts: string[]; cnt: number }>;
-  init(limit: number): void;
   sendMessage(msg: string): void;
   onReceive(handler: (msg: string) => void): void;
-}
-
-// helpers
-function randomString(n: number) {
-  const chars = 'abcdefghijklmnopqrstuvwxyz';
-  const randomValues = new Uint32Array(n);
-  crypto.getRandomValues(randomValues);
-  return Array.from(randomValues, (value) => chars[value % chars.length]).join('');
+  init(limit: number): void;
 }
 
 // tcpApi
-let onMessage = (_msg: ITcpMessage) => {};
+const onMessageHandlers = new Set<(msg: ITcpMessage) => void>();
 const tcpApi: ITcpApi = {
   sendMessage(msg: ITcpMessage) {
     setTimeout(() => {
-      onMessage(msg);
-    }, Math.random() * 100);
+      onMessageHandlers.forEach((handler) => handler(msg));
+    }, Math.random() * 1000);
   },
   onReceive(handler) {
-    onMessage = handler;
+    onMessageHandlers.add(handler);
   },
 };
 
 // reliableApi
-let onReliableMessage = (_msg: string) => {};
+let onReliableMessageHandlers = new Set<(msg: string) => void>();
 const reliableApi: IReliableApi = {
   limit: 5,
   messages: new Map<string, { parts: string[]; cnt: number }>(),
-  init(limit: number) {
-    this.limit = limit;
-    tcpApi.onReceive((msg: ITcpMessage) => {
-      const id = msg.headers.id;
-      const len = msg.headers.len;
-      const pos = msg.headers.pos;
-      if (!this.messages.has(id)) {
-        const parts = new Array(len).fill(null);
-        this.messages.set(id, { parts, cnt: 0 });
-      }
-      const item = this.messages.get(id) ?? ({} as any);
-      const parts = [...item.parts];
-      const cnt = item.cnt + 1;
-      parts[pos] = msg.message;
-      this.messages.set(id, { parts, cnt });
-      if (cnt === len) {
-        this.messages.delete(id);
-        const newMessage = `${parts.join('')}`;
-        onReliableMessage(newMessage);
-      }
-    });
-  },
   sendMessage(msg: string) {
-    const id = crypto.randomUUID();
+    const id = crypto.randomUUID().split('-')[0];
     const len = Math.ceil(msg.length / this.limit);
     for (let i = 0; i < len; i++) {
       const part = msg.substring(i * this.limit, (i + 1) * this.limit);
-      tcpApi.sendMessage({ headers: { id, len, pos: i }, message: part });
+      tcpApi.sendMessage({ headers: { id, type: 'MSG', len, pos: i }, message: part });
     }
   },
   onReceive(handler) {
-    onReliableMessage = handler;
+    onReliableMessageHandlers.add(handler);
+  },
+  init(limit: number) {
+    this.limit = limit;
+    tcpApi.onReceive((msg: ITcpMessage) => {
+      if (msg.headers.type === 'ACK') {
+        onReliableMessageHandlers.forEach((handler) => handler('delivered'));
+      }
+      if (msg.headers.type === 'MSG') {
+        const id = msg.headers.id;
+        const len = msg.headers.len;
+        const pos = msg.headers.pos;
+        if (!this.messages.has(id)) {
+          const parts = new Array(len).fill(null);
+          this.messages.set(id, { parts, cnt: 0 });
+        }
+        const item = this.messages.get(id) ?? ({} as any);
+        const parts = [...item.parts];
+        const cnt = item.cnt + 1;
+        parts[pos] = msg.message;
+        this.messages.set(id, { parts, cnt });
+        if (cnt === len) {
+          this.messages.delete(id);
+          const newMessage = `${parts.join('')}`;
+          onReliableMessageHandlers.forEach((handler) => handler(newMessage));
+          tcpApi.sendMessage({ headers: { id, type: 'ACK', len, pos: 0 } });
+        }
+      }
+    });
   },
 };
 
-export { tcpApi, reliableApi, randomString };
+export { tcpApi, reliableApi };
 export type { ITcpMessage, ITcpApi };

@@ -24,7 +24,7 @@ import { TRouteDTO } from '@/settings/routes';
 import { Authenticated } from '@/supabase/auth-client';
 
 const SIDEBAR_STORAGE_NAME = 'sidebar-left';
-const SIDEBAR_KEYBOARD_SHORTCUT = 'g';
+const SIDEBAR_LEFT_KEYBOARD_SHORTCUT = 'g';
 const SIDEBAR_TRANSITION_DURATION = 200;
 const SIDEBAR_EVENT_START = 'sidebar-left-start';
 const SIDEBAR_EVENT_END = 'sidebar-left-end';
@@ -105,7 +105,7 @@ const SidebarLeftProvider = forwardRef<HTMLDivElement, SidebarLeftProviderProps>
   // keyboard shortcut to toggle/hide the sidebar.
   useEffect(() => {
     const handleKeyDown = (event: KeyboardEvent) => {
-      if (event.key === SIDEBAR_KEYBOARD_SHORTCUT && (event.metaKey || event.ctrlKey)) {
+      if (event.key === SIDEBAR_LEFT_KEYBOARD_SHORTCUT && (event.metaKey || event.ctrlKey)) {
         event.preventDefault();
         toggleSidebar();
       }
@@ -329,4 +329,5 @@ export {
   useSidebarLeft,
   SIDEBAR_EVENT_START,
   SIDEBAR_EVENT_END,
+  SIDEBAR_LEFT_KEYBOARD_SHORTCUT,
 };
