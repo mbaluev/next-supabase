@@ -2,7 +2,7 @@
 
 import { SidebarLeftTrigger } from '@/components/layout/sidebar-left';
 import { SidebarRightTrigger } from '@/components/layout/sidebar-right';
-import { Button } from '@/components/ui/button';
+import { Button, ButtonProps } from '@/components/ui/button';
 import { useTheme } from 'next-themes';
 import { TooltipText } from '@/components/ui/tooltip';
 import { Moon, Sun } from 'lucide-react';
@@ -12,9 +12,9 @@ import { BreadCrumbs } from '@/components/layout/bread-crumbs';
 import { useCallback, useEffect } from 'react';
 import { Authenticated } from '@/supabase/auth-client';
 
-const THEME_KEYBOARD_SHORTCUT = 't';
+const THEME_KEYBOARD_SHORTCUT = 'b';
 
-const HeaderThemeBtn = () => {
+const HeaderThemeBtn = (props: ButtonProps) => {
   const { setTheme, theme } = useTheme();
   const handleChangeTheme = useCallback(
     () => setTheme(theme === 'dark' ? 'light' : 'dark'),
@@ -24,8 +24,7 @@ const HeaderThemeBtn = () => {
   // keyboard shortcut to toggle/hide the sidebar.
   useEffect(() => {
     const handleKeyDown = (event: KeyboardEvent) => {
-      // && (event.metaKey || event.ctrlKey)
-      if (event.key === THEME_KEYBOARD_SHORTCUT) {
+      if (event.key === THEME_KEYBOARD_SHORTCUT && (event.metaKey || event.ctrlKey)) {
         event.preventDefault();
         handleChangeTheme();
       }
@@ -36,7 +35,7 @@ const HeaderThemeBtn = () => {
 
   return (
     <TooltipText title="switch theme" side="left">
-      <Button variant="ghost" size="icon" onClick={handleChangeTheme} className="grow-0">
+      <Button variant="ghost" size="icon" onClick={handleChangeTheme} className="grow-0" {...props}>
         <Moon className="rotate-90 scale-0 transition-transform ease-in-out duration-500 dark:rotate-0 dark:scale-100" />
         <Sun className="rotate-0 scale-100 transition-transform ease-in-out duration-500 dark:-rotate-90 dark:scale-0 absolute" />
       </Button>
@@ -79,4 +78,4 @@ const Header = () => {
   );
 };
 
-export { Header };
+export { Header, HeaderThemeBtn, THEME_KEYBOARD_SHORTCUT };
